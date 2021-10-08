@@ -6,16 +6,17 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFou
  *
  */
 export default class InsightFacade implements IInsightFacade {
+	/*
 	constructor() {
 		console.trace("InsightFacadeImpl::init()");
 	}
-
+*/
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		return Promise.reject("Not implemented.");
+		return Promise.resolve([]);
 	}
 
 	public removeDataset(id: string): Promise<string> {
-		return Promise.reject("Not implemented.");
+		return Promise.resolve("");
 	}
 
 	public performQuery(query: any): Promise<any[]> {
