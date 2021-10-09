@@ -24,25 +24,48 @@ export default class InsightFacade implements IInsightFacade {
 
 		let queryString: string = Object.keys(where)[0];
 
-		if (!queryString) {
-			throw new InsightError();
+		let filteredData: any[] = this.filterData(queryString);
+
+		return Promise.resolve([]);
+	}
+
+	private filterData(query: any): any[] {
+		if (!query) {
+			//return array of data
 		}
 
-		switch(queryString) {
+		let nextQuery: string[] = Object.keys(query);
+
+		switch(query) {
 		case "LT":
+			//lower than 
 			break;
 		case "GT":
+			//greater than
 			break;
 		case "EQ":
+			//equal to 
 			break;
 		case "AND":
+			//intersection of recursion 
+			this.filterAND(nextQuery);
 			break;
 		case "OR":
+			//union of recursion
+			this.filterOR(nextQuery);
 			break;
 		default: throw new InsightError();
 		}
 
-		return Promise.resolve([]);
+		return [];
+	}
+
+	private filterAND(query: any): any[] {
+		return [];
+	}
+
+	private filterOR(query: any): any[] {
+		return [];
 	}
 
 	public listDatasets(): Promise<InsightDataset[]> {
