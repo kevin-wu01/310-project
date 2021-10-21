@@ -1,5 +1,9 @@
 import {IInsightFacade, InsightDataset, InsightDatasetKind,
 	InsightError, NotFoundError, ResultTooLargeError} from "./IInsightFacade";
+import {filterData, filterOptions } from "./QueryUtil";
+import JSZip from "jszip";
+import * as fs from "fs";
+
 
 /**
  * This is the main programmatic entry point for the project.
@@ -7,9 +11,58 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind,
  *
  */
 export default class InsightFacade implements IInsightFacade {
+	private data: any[] = [];
 
 	constructor() {
-		console.trace("InsightFacadeImpl::init()");
+		// console.trace("InsightFacadeImpl::init()");
+
+		fs.readFile("./test/data/courses.zip", (err, data) => {
+			if (err) {
+				console.log("error", err);
+			}
+
+			if (!err) {
+				let zip = new JSZip();
+				zip.loadAsync(data).then((contents) => {
+					// console.log("contents", contents);
+					// console.log("values", Object.values(contents));
+					// console.log(typeof contents === "object");
+					console.log("is array", Array.isArray(Object.values(contents)));
+					console.log("is object", typeof Object.values(contents) === "object");
+
+					Object.values(contents).forEach((course: any) => {
+						this.data.push(course);
+					});
+					// console.log("first index", this.data[0]);
+					// console.log("this.data", this.data);
+					/*
+					Object.keys(contents.files).forEach(function(filename) {
+						console.log("filename", filename);
+						zip.file(filename)!.async("nodebuffer").then(function(content) {
+							console.log("zip file", content);
+						});
+					});
+					 */
+				});
+			}
+		});
+
+		/*
+		let jsZip = require("jszip");
+		jsZip.loadAsync("../../test/data/courses.zip").then((zip: any) => {
+			console.log("zip", zip);
+			Object.keys(zip.files).forEach((filename) => {
+				zip.files[filename].async("string").then((fileData: any) => {
+					console.log("fileData", fileData);
+					this.data = fileData;
+					console.log("data", this.data);
+				});
+			});
+		}).catch((err: any) => {
+			console.log(err);
+		});
+		*/
+		console.log("data", this.data);
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
@@ -24,17 +77,17 @@ export default class InsightFacade implements IInsightFacade {
 		const where: Record<string, any> = query.WHERE;
 		const options: Record<string, any> = query.OPTIONS;
 
-		let filteredData: any[] = this.filterData([], where);
+		let filteredData: any[] = filterData([], where);
 
 		if (filteredData.length > 5000) {
 			throw new ResultTooLargeError();
 		}
 
-		filteredData = this.filterOptions(filteredData, options);
+		filteredData = filterOptions(filteredData, options);
 
 		return Promise.resolve(filteredData);
 	}
-
+	/*
 	private filterData(data: any[], query: any): any[] {
 		const queryString: string = Object.keys(query)[0];
 
@@ -75,12 +128,12 @@ export default class InsightFacade implements IInsightFacade {
 
 		return data;
 	}
-
+	*/
 	private filterAND(data: any[], queryArray: any): any[] {
 		let queryResults: any[] = [];
 
 		for (let query of queryArray) {
-			queryResults.push(this.filterData(data, query));
+			queryResults.push(filterData(data, query));
 		}
 
 		queryResults = queryResults.reduce((a, b) => a.filter((c: any) => b.includes(c))); // intersection of multiple arrays
@@ -92,7 +145,7 @@ export default class InsightFacade implements IInsightFacade {
 		let queryResults: any[] = [];
 
 		for (let query of queryArray) {
-			queryResults.push(this.filterData(data, query));
+			queryResults.push(filterData(data, query));
 		}
 
 		queryResults = queryResults.filter((classData, index, self) => {
@@ -138,7 +191,7 @@ export default class InsightFacade implements IInsightFacade {
 
 		return filteredData;
 	}
-
+	/*
 	private filterOptions(data: any[], query: any): any[] {
 		const dataColumns: string[] = query.COLUMNS;
 		const sortColumn: string = query.ORDER.split("_")[1];
@@ -168,7 +221,7 @@ export default class InsightFacade implements IInsightFacade {
 
 		return filteredData;
 	}
-
+	*/
 	private checkValidKey(key: string): void {
 		const validKeys: string[] = ["avg", "pass", "fail", "audit", "year",
 			"dept", "id", "instructor", "title", "uuid"];
