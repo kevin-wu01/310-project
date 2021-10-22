@@ -15,24 +15,38 @@ export default class InsightFacade implements IInsightFacade {
 
 	constructor() {
 		// console.trace("InsightFacadeImpl::init()");
+		let dataObject: any[] = [];
 
-		fs.readFile("./test/data/courses.zip", (err, data) => {
-			if (err) {
-				console.log("error", err);
-			}
-
+		fs.readFile("./test/data/courses2.zip", (err, data) => {
+			console.log(data);
 			if (!err) {
 				let zip = new JSZip();
 				zip.loadAsync(data).then((contents) => {
 					// console.log("contents", contents);
 					// console.log("values", Object.values(contents));
 					// console.log(typeof contents === "object");
-					console.log("is array", Array.isArray(Object.values(contents)));
-					console.log("is object", typeof Object.values(contents) === "object");
+					// console.log("is array", Array.isArray(Object.values(contents)));
+					// console.log("is object", typeof contents === "object");
+					// console.log(Object.values(contents)[0]);
+					// console.log(typeof contents.folder("courses"));
 
-					Object.values(contents).forEach((course: any) => {
-						this.data.push(course);
+					Object.keys(contents.files).forEach((filename) => {
+						zip.file(filename)?.async("string").then((text) => {
+							dataObject.push(text);
+						});
 					});
+					console.log(dataObject);
+					/*
+					contents.folder("courses").forEach(function (filename, file) {
+						console.log(filename);
+						console.log("file", file);
+					});
+					if (typeof Object.values(contents) !== null) {
+						Object.values(contents).forEach((course: any) => {
+							this.data.push(course);
+						});
+					}
+					*/
 					// console.log("first index", this.data[0]);
 					// console.log("this.data", this.data);
 					/*
@@ -62,10 +76,22 @@ export default class InsightFacade implements IInsightFacade {
 			console.log(err);
 		});
 		*/
-		console.log("data", this.data);
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+		let zip = new JSZip();
+		// let buffer: Buffer =
+
+		zip.loadAsync(content).then((contents) => {
+			console.log(contents);
+			Object.keys(contents.files).forEach((fileName) => {
+				zip.file(fileName)?.async("string").then((text) => {
+					return;
+				});
+			});
+		});
+
+
 		return Promise.resolve([]);
 	}
 
