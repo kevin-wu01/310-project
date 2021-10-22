@@ -18,24 +18,17 @@ export default class InsightFacade implements IInsightFacade {
 		let dataObject: any[] = [];
 
 		fs.readFile("./test/data/courses2.zip", (err, data) => {
-			console.log(data);
+			console.log("data", data);
 			if (!err) {
 				let zip = new JSZip();
 				zip.loadAsync(data).then((contents) => {
-					// console.log("contents", contents);
-					// console.log("values", Object.values(contents));
-					// console.log(typeof contents === "object");
-					// console.log("is array", Array.isArray(Object.values(contents)));
-					// console.log("is object", typeof contents === "object");
-					// console.log(Object.values(contents)[0]);
-					// console.log(typeof contents.folder("courses"));
-
+					console.log("contents", contents);
 					Object.keys(contents.files).forEach((filename) => {
 						zip.file(filename)?.async("string").then((text) => {
 							dataObject.push(text);
 						});
 					});
-					console.log(dataObject);
+					// console.log(dataObject);
 					/*
 					contents.folder("courses").forEach(function (filename, file) {
 						console.log(filename);
@@ -60,33 +53,16 @@ export default class InsightFacade implements IInsightFacade {
 				});
 			}
 		});
-
-		/*
-		let jsZip = require("jszip");
-		jsZip.loadAsync("../../test/data/courses.zip").then((zip: any) => {
-			console.log("zip", zip);
-			Object.keys(zip.files).forEach((filename) => {
-				zip.files[filename].async("string").then((fileData: any) => {
-					console.log("fileData", fileData);
-					this.data = fileData;
-					console.log("data", this.data);
-				});
-			});
-		}).catch((err: any) => {
-			console.log(err);
-		});
-		*/
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		let zip = new JSZip();
-		// let buffer: Buffer =
+		let buffer = new Buffer(content, "base64");
 
-		zip.loadAsync(content).then((contents) => {
-			console.log(contents);
+		zip.loadAsync(content.toString()).then((contents) => {
 			Object.keys(contents.files).forEach((fileName) => {
 				zip.file(fileName)?.async("string").then((text) => {
-					return;
+					this.data.push(text);
 				});
 			});
 		});
