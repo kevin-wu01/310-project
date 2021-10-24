@@ -17,48 +17,48 @@ export default class InsightFacade implements IInsightFacade {
 		// console.trace("InsightFacadeImpl::init()");
 		let dataObject: any[] = [];
 
-		fs.readFile("./test/data/courses2.zip", (err, data) => {
-			console.log("data", data);
-			if (!err) {
-				let zip = new JSZip();
-				zip.loadAsync(data).then((contents) => {
-					console.log("contents", contents);
-					Object.keys(contents.files).forEach((filename) => {
-						zip.file(filename)?.async("string").then((text) => {
-							dataObject.push(text);
-						});
-					});
-					// console.log(dataObject);
-					/*
-					contents.folder("courses").forEach(function (filename, file) {
-						console.log(filename);
-						console.log("file", file);
-					});
-					if (typeof Object.values(contents) !== null) {
-						Object.values(contents).forEach((course: any) => {
-							this.data.push(course);
-						});
-					}
-					*/
-					// console.log("first index", this.data[0]);
-					// console.log("this.data", this.data);
-					/*
-					Object.keys(contents.files).forEach(function(filename) {
-						console.log("filename", filename);
-						zip.file(filename)!.async("nodebuffer").then(function(content) {
-							console.log("zip file", content);
-						});
-					});
-					 */
-				});
-			}
-		});
+// 		fs.readFile("./test/data/courses2.zip", (err, data) => {
+// 			console.log("data", data);
+// 			if (!err) {
+// 				let zip = new JSZip();
+// 				zip.loadAsync(data).then((contents) => {
+// 					console.log("contents", contents);
+// 					Object.keys(contents.files).forEach((filename) => {
+// 						zip.file(filename)?.async("string").then((text) => {
+// 							dataObject.push(text);
+// 						});
+// 					});
+// 					// console.log(dataObject);
+// 					/*
+// 					contents.folder("courses").forEach(function (filename, file) {
+// 						console.log(filename);
+// 						console.log("file", file);
+// 					});
+// 					if (typeof Object.values(contents) !== null) {
+// 						Object.values(contents).forEach((course: any) => {
+// 							this.data.push(course);
+// 						});
+// 					}
+// 					*/
+// 					// console.log("first index", this.data[0]);
+// 					// console.log("this.data", this.data);
+// 					/*
+// 					Object.keys(contents.files).forEach(function(filename) {
+// 						console.log("filename", filename);
+// 						zip.file(filename)!.async("nodebuffer").then(function(content) {
+// 							console.log("zip file", content);
+// 						});
+// 					});
+// 					 */
+// 				});
+// 			}
+// 		});
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		let zip = new JSZip();
 		let buffer = new Buffer(content, "base64");
-
+		/*
 		zip.loadAsync(content.toString()).then((contents) => {
 			Object.keys(contents.files).forEach((fileName) => {
 				zip.file(fileName)?.async("string").then((text) => {
@@ -66,7 +66,7 @@ export default class InsightFacade implements IInsightFacade {
 				});
 			});
 		});
-
+		*/
 
 		return Promise.resolve([]);
 	}

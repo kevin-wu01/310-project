@@ -50,7 +50,7 @@ function filterAND(data: any[], queryArray: any): any[] {
 	}
 
 	queryResults = queryResults.reduce((a, b) => a.filter((c: any) => b.includes(c))); // intersection of multiple arrays
-
+	//
 	return queryResults;
 }
 
