@@ -78,6 +78,7 @@ export default class InsightFacade implements IInsightFacade {
 	public performQuery(query: any): Promise<any[]> {
 		const where: Record<string, any> = query.WHERE;
 		const options: Record<string, any> = query.OPTIONS;
+		let filteredData: any[] = [];
 
 		if (!options) {
 			throw new InsightError();
@@ -86,7 +87,11 @@ export default class InsightFacade implements IInsightFacade {
 		let id: string = checkValidID(options);
 		let dataset: any[] = this.findDataset(id);
 
-		let filteredData: any[] = filterData(dataset, where);
+		if (Object.keys(where).length !== 0) {
+			filteredData = filterData(dataset, where);
+		} else {
+			filteredData = []; // stub
+		}
 
 		if (filteredData.length > 5000) {
 			throw new ResultTooLargeError();

@@ -5,32 +5,28 @@ function filterData(data: any[], query: any): any[] {
 	const queryString: string = Object.keys(query)[0];
 	let removeData: any[];
 
-	if (!queryString) {
-		return data;
-	}
-
 	switch(queryString) {
 	case "LT":
 		checkValidMComparator(query);
 		data = filterMComparator(data, "LT", Object.keys(query.LT)[0], query[Object.keys(query.LT)[0]]);
-			// lower than
+				// lower than
 		break;
 	case "GT":
 		checkValidMComparator(query);
 		data = filterMComparator(data, "GT", Object.keys(query.GT)[0], query[Object.keys(query.LT)[0]]);
-			// greater than
+				// greater than
 		break;
 	case "EQ":
 		checkValidMComparator(query);
 		data = filterMComparator(data, "EQ", Object.keys(query.EQ)[0], query[Object.keys(query.LT)[0]]);
-			// equal to
+				// equal to
 		break;
 	case "AND":
-			// intersection of recursion
+				// intersection of recursion
 		data = filterAND(data, query.AND);
 		break;
 	case "OR":
-			// union of recursion
+				// union of recursion
 		data = filterOR(data, query.OR);
 		break;
 	case "IS":
