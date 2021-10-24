@@ -163,4 +163,28 @@ function filterSComparator(data: any[], field: string, value: string) {
 
 }
 
-export {filterData, filterOptions};
+function checkValidID(options: any) {
+	let columns: any[] = options.COLUMNS;
+	let order: string = options.ORDER;
+	let id: string;
+
+	if (columns.length === 0) {
+		throw new InsightError();
+	}
+
+	id = columns[0].split("_")[0];
+
+	columns.forEach((c) => {
+		if (id !== c.split("_")[0]) {
+			throw new InsightError();
+		}
+	});
+
+	if (id !== order.split("_")[0]) {
+		throw new InsightError();
+	}
+
+	return id;
+}
+
+export {filterData, filterOptions, checkValidID};
