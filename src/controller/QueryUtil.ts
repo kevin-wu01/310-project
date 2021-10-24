@@ -6,37 +6,37 @@ function filterData(data: any[], query: any): any[] {
 	let removeData: any[];
 
 	switch(queryString) {
-	case "LT":
-		checkValidMComparator(query);
-		data = filterMComparator(data, "LT", Object.keys(query.LT)[0], query[Object.keys(query.LT)[0]]);
-				// lower than
-		break;
-	case "GT":
-		checkValidMComparator(query);
-		data = filterMComparator(data, "GT", Object.keys(query.GT)[0], query[Object.keys(query.LT)[0]]);
-				// greater than
-		break;
-	case "EQ":
-		checkValidMComparator(query);
-		data = filterMComparator(data, "EQ", Object.keys(query.EQ)[0], query[Object.keys(query.LT)[0]]);
-				// equal to
-		break;
-	case "AND":
-				// intersection of recursion
-		data = filterAND(data, query.AND);
-		break;
-	case "OR":
-				// union of recursion
-		data = filterOR(data, query.OR);
-		break;
-	case "IS":
-		data = filterSComparator(data, Object.keys(query.IS)[0], query[Object.keys(query.IS)[0]]);
-		break;
-	case "NOT":
-		removeData = filterData(data, query.NOT);
-		data = data.filter((x) => !removeData.includes(x));
-		break;
-	default: throw new InsightError();
+		case "LT":
+			checkValidMComparator(query);
+			data = filterMComparator(data, "LT", Object.keys(query.LT)[0], query[Object.keys(query.LT)[0]]);
+					// lower than
+			break;
+		case "GT":
+			checkValidMComparator(query);
+			data = filterMComparator(data, "GT", Object.keys(query.GT)[0], query[Object.keys(query.LT)[0]]);
+					// greater than
+			break;
+		case "EQ":
+			checkValidMComparator(query);
+			data = filterMComparator(data, "EQ", Object.keys(query.EQ)[0], query[Object.keys(query.LT)[0]]);
+					// equal to
+			break;
+		case "AND":
+					// intersection of recursion
+			data = filterAND(data, query.AND);
+			break;
+		case "OR":
+					// union of recursion
+			data = filterOR(data, query.OR);
+			break;
+		case "IS":
+			data = filterSComparator(data, Object.keys(query.IS)[0], query[Object.keys(query.IS)[0]]);
+			break;
+		case "NOT":
+			removeData = filterData(data, query.NOT);
+			data = data.filter((x) => !removeData.includes(x));
+			break;
+		default: throw new InsightError();
 	}
 
 	return data;
@@ -85,21 +85,21 @@ function filterMComparator(data: any[], comparator: string, field: string, value
 	let filteredData: any[] = [];
 
 	switch(comparator) {
-	case "LT":
-		filteredData = data.filter((dataClass) => {
-			return dataClass[field] < value;
-		});
-		break;
-	case "GT":
-		filteredData = data.filter((dataClass) => {
-			return dataClass[field] > value;
-		});
-		break;
-	case "EQ":
-		filteredData = data.filter((dataClass) => {
-			return dataClass[field] === value;
-		});
-		break;
+		case "LT":
+			filteredData = data.filter((dataClass) => {
+				return dataClass[field] < value;
+			});
+			break;
+		case "GT":
+			filteredData = data.filter((dataClass) => {
+				return dataClass[field] > value;
+			});
+			break;
+		case "EQ":
+			filteredData = data.filter((dataClass) => {
+				return dataClass[field] === value;
+			});
+			break;
 	}
 
 	return filteredData;
