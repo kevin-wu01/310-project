@@ -33,6 +33,7 @@ function filterData(data: any[], query: any): any[] {
 			data = filterSComparator(data, Object.keys(query.IS)[0], query[Object.keys(query.IS)[0]]);
 			break;
 		case "NOT":
+			checkValidNOTComparator(query);
 			removeData = filterData(data, query.NOT);
 			data = data.filter((x) => !removeData.includes(x));
 			break;
@@ -45,17 +46,21 @@ function filterData(data: any[], query: any): any[] {
 function filterAND(data: any[], queryArray: any): any[] {
 	let queryResults: any[] = [];
 
+	checkValidArrayComparator(queryArray);
+
 	for (let query of queryArray) {
 		queryResults.push(filterData(data, query));
 	}
 
 	queryResults = queryResults.reduce((a, b) => a.filter((c: any) => b.includes(c))); // intersection of multiple arrays
-	//
+
 	return queryResults;
 }
 
 function filterOR(data: any[], queryArray: any): any[] {
 	let queryResults: any[] = [];
+
+	checkValidArrayComparator(queryArray);
 
 	for (let query of queryArray) {
 		queryResults.push(filterData(data, query));
@@ -69,6 +74,16 @@ function filterOR(data: any[], queryArray: any): any[] {
 
 
 	return queryResults;
+}
+
+function checkValidArrayComparator(queryArray: any) {
+	if (!Array.isArray(queryArray)) {
+		throw new InsightError();
+	}
+
+	if (queryArray.length === 0) {
+		throw new InsightError();
+	}
 }
 
 function checkValidMComparator(query: any): void {
@@ -181,6 +196,16 @@ function checkValidID(options: any) {
 	}
 
 	return id;
+}
+
+function checkValidNOTComparator(query: any) {
+	if (typeof query !== "object") {
+		throw new InsightError();
+	}
+
+	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
+		throw new InsightError();
+	}
 }
 
 export {filterData, filterOptions, checkValidID};

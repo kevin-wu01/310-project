@@ -11,11 +11,19 @@ import * as fs from "fs";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-	private data: any[] = [];
+
+	private set data(value: any[]) {
+		this._data = value;
+	}
+
+	private _data: any[];
+	private num: number;
 
 	constructor() {
 		// console.trace("InsightFacadeImpl::init()");
-		let dataObject: any[] = [];
+		// let dataObject: any[] = [];
+		this._data = [];
+		this.num = 0;
 
 // 		fs.readFile("./test/data/courses2.zip", (err, data) => {
 // 			console.log("data", data);
@@ -55,20 +63,65 @@ export default class InsightFacade implements IInsightFacade {
 // 		});
 	}
 
-	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		let zip = new JSZip();
-		let buffer = new Buffer(content, "base64");
-		/*
-		zip.loadAsync(content.toString()).then((contents) => {
+		let array: any[] = [];
+		// let buffer = new Buffer(content, "base64");
+
+		await zip.loadAsync(content, {base64: true}).then(async (contents) => {
+			/*
 			Object.keys(contents.files).forEach((fileName) => {
+				// console.log(fileName);
 				zip.file(fileName)?.async("string").then((text) => {
+					// console.log(text.substring(0,10));
+					console.log(this.data);
 					this.data.push(text);
+					// console.log(array);
+					// console.log("this.data", this.data[0].substr(1, 20));
 				});
 			});
+			*/
+			for (let fileName of Object.keys(contents.files)) {
+				await zip.file(fileName)?.async("string").then((text) => {
+					// console.log("also data", this.data);
+					array.push(text);
+					this.num = 1;
+					// console.log("num", this.num);
+				});
+			}
+			/*
+			for (let i = 0; i < Object.keys(contents.files).length; i++) {
+				await zip.file(Object.keys(contents.files)[i])?.async("string").then((text) => {
+					// console.log("also data", this.data);
+					array.push(text);
+					this.num = 1;
+					// console.log("num", this.num);
+				});
+			}
+			*/
+			//  console.log(array, "array");
+			this._data = array;
+			console.log(this._data);
+			// console.log("outside num", this.num);
+			// this.data = array;
+			// console.log("data", this.data);
+			return Promise.resolve([]);
+		});
+
+		return Promise.reject("add failed");
+		/*
+		console.log("array", array);
+		this.data = array;
+		console.log("outside loop", this.data);
+
+		 */
+		/*
+		zip.loadAsync(content).then((contents) => {
+			console.log(contents);
 		});
 		*/
 
-		return Promise.resolve([]);
+		// console.log(atob(content));
 	}
 
 	public removeDataset(id: string): Promise<string> {
@@ -79,7 +132,7 @@ export default class InsightFacade implements IInsightFacade {
 		const where: Record<string, any> = query.WHERE;
 		const options: Record<string, any> = query.OPTIONS;
 		let filteredData: any[] = [];
-
+		console.log("data", this._data);
 		if (!options) {
 			throw new InsightError();
 		}

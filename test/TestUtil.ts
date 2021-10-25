@@ -10,6 +10,7 @@ export interface Query {
 
 const getContentFromArchives = (name: string): string => {
 	return fs.readFileSync(`./test/data/${name}`).toString("base64");
+	// .toString("base64")
 };
 
 const result1: Array<Record<string, any>> = [{courses_dept:"math",courses_avg:97.09},
