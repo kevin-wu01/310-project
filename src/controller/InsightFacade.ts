@@ -5,6 +5,7 @@ import JSZip from "jszip";
 import * as fs from "fs";
 
 
+var added_ids:string[] = [];
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
@@ -64,51 +65,106 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		let zip = new JSZip();
-		let array: any[] = [];
-		// let buffer = new Buffer(content, "base64");
+		if (id.includes("_")) {
+			throw new InsightError("id has underscore");
+		}
 
-		await zip.loadAsync(content, {base64: true}).then(async (contents) => {
-			/*
-			Object.keys(contents.files).forEach((fileName) => {
-				// console.log(fileName);
-				zip.file(fileName)?.async("string").then((text) => {
-					// console.log(text.substring(0,10));
-					console.log(this.data);
-					this.data.push(text);
+		// https://stackoverflow.com/questions/10261986/how-to-detect-string-which-contains-only-spaces/50971250
+		if (!id.replace(/\s/g, '').length) {
+			throw new InsightError("id only has whitespaces");
+		}
+
+		if (added_ids.includes(id)) {
+			throw new InsightError("id already exists");
+		}
+
+
+		
+		//const fse = require('fs-extra');
+
+		// https://flaviocopes.com/how-to-check-if-file-exists-node/
+
+		// const path = './addedlist.txt'
+		
+	
+		// try {
+		// 	if (fse.existsSync(path)) {
+		// 	  //file exists
+
+		// 		// https://stuk.github.io/jszip/documentation/howto/read_zip.html
+		// 	  var JSZip = require("jszip");
+
+		// 	  new JSZip.external.Promise(function (resolve, reject) {
+		// 		fs.readFile("test.zip", function(err, data) {
+		// 			if (err) {
+		// 				reject(e);
+		// 			} else {
+		// 				resolve(data);
+		// 			}
+		// 		});
+		// 	}).then(function (data) {
+		// 		return JSZip.loadAsync(data);
+		// 	})
+		// 	.then(...)
+		// 	}
+		//   } catch(err) {
+		// 	  // https://flaviocopes.com/how-to-create-empty-file-node/
+		// 	const fd = fse.openSync(path, 'w');
+
+		// 	fs.closeSync(fd);
+		//   }
+
+
+		
+
+		let zip = new JSZip();
+		// let array: any[] = [];
+		// console.log("yooooooooooooooo");
+		// // let buffer = new Buffer(content, "base64");
+
+		await zip.loadAsync(content, {base64: true}).then((contents) => {
+			// let 
+			// contents.forEach
+			
+			// Object.keys(contents.files).forEach((fileName) => {
+			// 	// console.log(fileName);
+			// 	zip.file(fileName)?.async("string").then((text) => {
+			// 		// console.log(text.substring(0,10));
+			// 		console.log(this.data);
+			// 		this.data.push(text);
 					// console.log(array);
 					// console.log("this.data", this.data[0].substr(1, 20));
-				});
-			});
-			*/
-			for (let fileName of Object.keys(contents.files)) {
-				await zip.file(fileName)?.async("string").then((text) => {
-					// console.log("also data", this.data);
-					array.push(text);
-					this.num = 1;
-					// console.log("num", this.num);
-				});
-			}
-			/*
-			for (let i = 0; i < Object.keys(contents.files).length; i++) {
-				await zip.file(Object.keys(contents.files)[i])?.async("string").then((text) => {
-					// console.log("also data", this.data);
-					array.push(text);
-					this.num = 1;
-					// console.log("num", this.num);
-				});
-			}
-			*/
-			//  console.log(array, "array");
-			this._data = array;
-			console.log(this._data);
-			// console.log("outside num", this.num);
-			// this.data = array;
-			// console.log("data", this.data);
-			return Promise.resolve([]);
-		});
+			// 	});
+			// });
+			
+		// 	for (let fileName of Object.keys(contents.files)) {
+		// 		await zip.file(fileName)?.async("string").then((text) => {
+		// 			// console.log("also data", this.data);
+		// 			array.push(text);
+		// 			this.num = 1;
+		// 			// console.log("num", this.num);
+		// 		});
+		// 	}
+		// 	/*
+		// 	for (let i = 0; i < Object.keys(contents.files).length; i++) {
+		// 		await zip.file(Object.keys(contents.files)[i])?.async("string").then((text) => {
+		// 			// console.log("also data", this.data);
+		// 			array.push(text);
+		// 			this.num = 1;
+		// 			// console.log("num", this.num);
+		// 		});
+		// 	}
+		// 	*/
+		// 	//  console.log(array, "array");
+		// 	this._data = array;
+		// 	console.log(this._data);
+		// 	// console.log("outside num", this.num);
+		// 	// this.data = array;
+		// 	// console.log("data", this.data);
+		// 	return Promise.resolve([]);
+		// });
 
-		return Promise.reject("add failed");
+		// return Promise.reject("add failed");
 		/*
 		console.log("array", array);
 		this.data = array;
@@ -122,7 +178,13 @@ export default class InsightFacade implements IInsightFacade {
 		*/
 
 		// console.log(atob(content));
-	}
+
+	}).catch((error) => {
+		throw new InsightError("problem writing");
+	});
+	added_ids.push(id);
+	return added_ids;
+}
 
 	public removeDataset(id: string): Promise<string> {
 		return Promise.resolve("");
