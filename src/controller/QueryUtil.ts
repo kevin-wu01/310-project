@@ -43,13 +43,17 @@ function checkValidWhere(query: any) {
 			checkValidSComparator(query.IS);
 			break;
 		case "NOT":
-			checkValidNOtComparator(query.NOT);
+			checkValidNOTComparator(query.NOT);
 			break;
 		default: throw new InsightError();
 	}
 }
 
 function checkValidAND(query: any) {
+	return;
+}
+
+function checkValidOR(query: any) {
 	return;
 }
 
