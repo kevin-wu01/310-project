@@ -1,6 +1,63 @@
 import {InsightError} from "./IInsightFacade";
 
-function checkValidQuery(query: any) {
+function checkValidQuery(query: any): string {
+	const where: Record<string, any> = query.WHERE;
+	const options: Record<string, any> = query.OPTIONS;
+
+	checkValidWhere(where);
+	checkValidOptions(options);
+
+	let id: string = checkValidID(options);
+
+	return id;
+}
+
+function checkValidWhere(query: any) {
+	const queryString: string = Object.keys(query)[0];
+
+	if (Object.keys(query) > 1) {
+		throw new InsightError();
+	}
+
+	if (Object.keys(query) === 0) {
+		return;
+	}
+
+	switch(queryString) {
+		case "LT":
+			checkValidMComparator(query.LT);
+			break;
+		case "GT":
+			checkValidMComparator(query.GT);
+			break;
+		case "EQ":
+			checkValidMComparator(query.EQ);
+			break;
+		case "AND":
+			checkValidAND(query.AND);
+			break;
+		case "OR":
+			checkValidOR(query.OR);
+			break;
+		case "IS":
+			checkValidSComparator(query.IS);
+			break;
+		case "NOT":
+			checkValidNOtComparator(query.NOT);
+			break;
+		default: throw new InsightError();
+	}
+}
+
+function checkValidAND(query: any) {
+	return;
+}
+
+function checkValidSComparator(query: any) {
+	return;
+}
+
+function checkValidOptions(options: any) {
 	return;
 }
 
@@ -181,10 +238,6 @@ function checkValidID(options: any) {
 	let columns: any[] = options.COLUMNS;
 	let order: string = options.ORDER;
 	let id: string;
-
-	if (columns.length === 0) {
-		throw new InsightError();
-	}
 
 	id = columns[0].split("_")[0];
 
