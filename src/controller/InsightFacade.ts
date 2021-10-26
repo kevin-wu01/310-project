@@ -1,6 +1,7 @@
 import {IInsightFacade, InsightDataset, InsightDatasetKind,
 	InsightError, NotFoundError, ResultTooLargeError} from "./IInsightFacade";
-import {filterData, filterOptions, checkValidID, checkValidQuery } from "./QueryUtil";
+import {filterData, filterOptions } from "./QueryUtil";
+import {checkValidQuery} from "./ValidationUtil";
 import JSZip from "jszip";
 import * as fs from "fs";
 
@@ -138,7 +139,6 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		let id: string = checkValidQuery(query);
-		// let id: string = checkValidID(options);
 		let dataset: any[] = this.findDataset(id);
 
 		if (Object.keys(where).length !== 0) {

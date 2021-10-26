@@ -1,115 +1,29 @@
 import {InsightError} from "./IInsightFacade";
 
-function checkValidQuery(query: any): string {
-	const where: Record<string, any> = query.WHERE;
-	const options: Record<string, any> = query.OPTIONS;
-
-	checkValidWhere(where);
-	checkValidOptions(options);
-
-	let id: string = checkValidID(options);
-
-	return id;
-}
-
-function checkValidWhere(query: any) {
-	const queryString: string = Object.keys(query)[0];
-
-	if (Object.keys(query).length > 1) {
-		throw new InsightError();
-	}
-
-	if (Object.keys(query).length === 0) {
-		return;
-	}
-
-	switch(queryString) {
-		case "LT":
-			checkValidMComparator(query.LT);
-			break;
-		case "GT":
-			checkValidMComparator(query.GT);
-			break;
-		case "EQ":
-			checkValidMComparator(query.EQ);
-			break;
-		case "AND":
-			checkValidLogicalComparator(query.AND);
-			break;
-		case "OR":
-			checkValidLogicalComparator(query.OR);
-			break;
-		case "IS":
-			checkValidSComparator(query.IS);
-			break;
-		case "NOT":
-			checkValidNOTComparator(query.NOT);
-			break;
-		default: throw new InsightError();
-	}
-}
-
-function checkValidLogicalComparator(query: any) {
-	query.forEach((q: any) => {
-		if (Object.keys(q).length === 0) {
-			throw new InsightError();
-		}
-
-		checkValidWhere(q);
-	});
-}
-
-function checkValidSComparator(query: any) {
-	return;
-}
-
-function checkValidNOTComparator(query: any) {
-	if (typeof query !== "object") {
-		throw new InsightError();
-	}
-
-	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
-		throw new InsightError();
-	}
-}
-
-function checkValidOptions(options: any) {
-	return;
-}
-
 function filterData(data: any[], query: any): any[] {
 	const queryString: string = Object.keys(query)[0];
 	let removeData: any[];
 
 	switch(queryString) {
 		case "LT":
-			checkValidMComparator(query);
 			data = filterMComparator(data, "LT", Object.keys(query.LT)[0], query[Object.keys(query.LT)[0]]);
-					// lower than
 			break;
 		case "GT":
-			checkValidMComparator(query);
 			data = filterMComparator(data, "GT", Object.keys(query.GT)[0], query[Object.keys(query.LT)[0]]);
-					// greater than
 			break;
 		case "EQ":
-			checkValidMComparator(query);
 			data = filterMComparator(data, "EQ", Object.keys(query.EQ)[0], query[Object.keys(query.LT)[0]]);
-					// equal to
 			break;
 		case "AND":
-					// intersection of recursion
 			data = filterAND(data, query.AND);
 			break;
 		case "OR":
-					// union of recursion
 			data = filterOR(data, query.OR);
 			break;
 		case "IS":
 			data = filterSComparator(data, Object.keys(query.IS)[0], query[Object.keys(query.IS)[0]]);
 			break;
 		case "NOT":
-			checkValidNOTComparator(query);
 			removeData = filterData(data, query.NOT);
 			data = data.filter((x) => !removeData.includes(x));
 			break;
@@ -122,8 +36,6 @@ function filterData(data: any[], query: any): any[] {
 function filterAND(data: any[], queryArray: any): any[] {
 	let queryResults: any[] = [];
 
-	checkValidArrayComparator(queryArray);
-
 	for (let query of queryArray) {
 		queryResults.push(filterData(data, query));
 	}
@@ -135,8 +47,6 @@ function filterAND(data: any[], queryArray: any): any[] {
 
 function filterOR(data: any[], queryArray: any): any[] {
 	let queryResults: any[] = [];
-
-	checkValidArrayComparator(queryArray);
 
 	for (let query of queryArray) {
 		queryResults.push(filterData(data, query));
@@ -158,16 +68,6 @@ function checkValidArrayComparator(queryArray: any) {
 	}
 
 	if (queryArray.length === 0) {
-		throw new InsightError();
-	}
-}
-
-function checkValidMComparator(query: any): void {
-	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
-		throw new InsightError();
-	}
-
-	if (typeof query[Object.keys(query)[0]] !== "number") {
 		throw new InsightError();
 	}
 }
@@ -227,9 +127,7 @@ function filterOptions(data: any[], query: any): any[] {
 }
 
 function checkValidKey(key: string): void {
-	const validKeys: string[] = ["avg", "pass", "fail", "audit", "year",
-		"dept", "id", "instructor", "title", "uuid"];
-
+	const validKeys: string[] = ["avg", "pass", "fail", "audit", "year", "dept", "id", "instructor", "title", "uuid"];
 	if (!validKeys.includes(key)) {
 		throw new InsightError();
 	}
@@ -239,7 +137,6 @@ function filterSComparator(data: any[], field: string, value: string) {
 	if (field !== "dept" && field !== "id" && field !== "instructor" && field !== "title" && field !== "uuid") {
 		throw new InsightError();
 	}
-
 	let filteredData: any[];
 
 	filteredData = data.filter((dataClass) => {
@@ -250,24 +147,5 @@ function filterSComparator(data: any[], field: string, value: string) {
 
 }
 
-function checkValidID(options: any) {
-	let columns: any[] = options.COLUMNS;
-	let order: string = options.ORDER;
-	let id: string;
 
-	id = columns[0].split("_")[0];
-
-	columns.forEach((c) => {
-		if (id !== c.split("_")[0]) {
-			throw new InsightError();
-		}
-	});
-
-	if (id !== order.split("_")[0]) {
-		throw new InsightError();
-	}
-
-	return id;
-}
-
-export {filterData, filterOptions, checkValidID, checkValidQuery};
+export {filterData, filterOptions};
