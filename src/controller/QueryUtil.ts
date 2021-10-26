@@ -1,5 +1,8 @@
 import {InsightError} from "./IInsightFacade";
 
+function checkValidQuery(query: any) {
+	return;
+}
 
 function filterData(data: any[], query: any): any[] {
 	const queryString: string = Object.keys(query)[0];
@@ -208,4 +211,4 @@ function checkValidNOTComparator(query: any) {
 	}
 }
 
-export {filterData, filterOptions, checkValidID};
+export {filterData, filterOptions, checkValidID, checkValidQuery};
