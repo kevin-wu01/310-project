@@ -122,12 +122,13 @@ export default class InsightFacade implements IInsightFacade {
 		// // let buffer = new Buffer(content, "base64");
 
 		await zip.loadAsync(content, {base64: true}).then((contents) => {
-			let prom_array:Promise<any>[] = [];
+			let promArray: Array<Promise<string>> = [];
 			contents.forEach(function (relativePath, file) {
-				prom_array.push(file.async("string"));
-			}
+				promArray.push(file.async("string"));
+			});
 
-			Promise.all(prom_array).then();
+			// Need to work here
+			Promise.all(promArray).then();
 
 
 		// let
@@ -187,9 +188,11 @@ export default class InsightFacade implements IInsightFacade {
 		// console.log(atob(content));
 
 		}).catch((error) => {
-			throw new InsightError("problem writing");
+			throw new InsightError("problem reading or writing");
 		});
-		addedIds.push(id);
+
+		// Need to work here
+		// addedIds.push(id);
 
 		keys = Array.from( this.addedIds.keys() );
 		return keys;
