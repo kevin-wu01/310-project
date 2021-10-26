@@ -5,13 +5,14 @@ import JSZip from "jszip";
 import * as fs from "fs";
 
 
-var added_ids:string[] = [];
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
  *
  */
 export default class InsightFacade implements IInsightFacade {
+
+	private addedIds = new Map();
 
 	private set data(value: any[]) {
 		this._data = value;
@@ -70,23 +71,23 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		// https://stackoverflow.com/questions/10261986/how-to-detect-string-which-contains-only-spaces/50971250
-		if (!id.replace(/\s/g, '').length) {
+		if (!id.replace(/\s/g, "").length) {
 			throw new InsightError("id only has whitespaces");
 		}
 
-		if (added_ids.includes(id)) {
+		let keys = Array.from( this.addedIds.keys() );
+		if (keys.includes(id)) {
 			throw new InsightError("id already exists");
 		}
 
 
-		
-		//const fse = require('fs-extra');
+		// const fse = require('fs-extra');
 
 		// https://flaviocopes.com/how-to-check-if-file-exists-node/
 
 		// const path = './addedlist.txt'
-		
-	
+
+
 		// try {
 		// 	if (fse.existsSync(path)) {
 		// 	  //file exists
@@ -115,28 +116,34 @@ export default class InsightFacade implements IInsightFacade {
 		//   }
 
 
-		
-
 		let zip = new JSZip();
 		// let array: any[] = [];
 		// console.log("yooooooooooooooo");
 		// // let buffer = new Buffer(content, "base64");
 
 		await zip.loadAsync(content, {base64: true}).then((contents) => {
-			// let 
-			// contents.forEach
-			
-			// Object.keys(contents.files).forEach((fileName) => {
-			// 	// console.log(fileName);
-			// 	zip.file(fileName)?.async("string").then((text) => {
-			// 		// console.log(text.substring(0,10));
-			// 		console.log(this.data);
-			// 		this.data.push(text);
-					// console.log(array);
-					// console.log("this.data", this.data[0].substr(1, 20));
-			// 	});
-			// });
-			
+			let prom_array:Promise<any>[] = [];
+			contents.forEach(function (relativePath, file) {
+				prom_array.push(file.async("string"));
+			}
+
+			Promise.all(prom_array).then();
+
+
+		// let
+		// contents.forEach
+
+		// Object.keys(contents.files).forEach((fileName) => {
+		// 	// console.log(fileName);
+		// 	zip.file(fileName)?.async("string").then((text) => {
+		// 		// console.log(text.substring(0,10));
+		// 		console.log(this.data);
+		// 		this.data.push(text);
+				// console.log(array);
+				// console.log("this.data", this.data[0].substr(1, 20));
+		// 	});
+		// });
+
 		// 	for (let fileName of Object.keys(contents.files)) {
 		// 		await zip.file(fileName)?.async("string").then((text) => {
 		// 			// console.log("also data", this.data);
@@ -179,12 +186,14 @@ export default class InsightFacade implements IInsightFacade {
 
 		// console.log(atob(content));
 
-	}).catch((error) => {
-		throw new InsightError("problem writing");
-	});
-	added_ids.push(id);
-	return added_ids;
-}
+		}).catch((error) => {
+			throw new InsightError("problem writing");
+		});
+		addedIds.push(id);
+
+		keys = Array.from( this.addedIds.keys() );
+		return keys;
+	}
 
 	public removeDataset(id: string): Promise<string> {
 		return Promise.resolve("");
