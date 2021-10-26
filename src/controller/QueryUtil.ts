@@ -15,11 +15,11 @@ function checkValidQuery(query: any): string {
 function checkValidWhere(query: any) {
 	const queryString: string = Object.keys(query)[0];
 
-	if (Object.keys(query) > 1) {
+	if (Object.keys(query).length > 1) {
 		throw new InsightError();
 	}
 
-	if (Object.keys(query) === 0) {
+	if (Object.keys(query).length === 0) {
 		return;
 	}
 
@@ -34,10 +34,10 @@ function checkValidWhere(query: any) {
 			checkValidMComparator(query.EQ);
 			break;
 		case "AND":
-			checkValidAND(query.AND);
+			checkValidLogicalComparator(query.AND);
 			break;
 		case "OR":
-			checkValidOR(query.OR);
+			checkValidLogicalComparator(query.OR);
 			break;
 		case "IS":
 			checkValidSComparator(query.IS);
@@ -49,16 +49,28 @@ function checkValidWhere(query: any) {
 	}
 }
 
-function checkValidAND(query: any) {
-	return;
-}
+function checkValidLogicalComparator(query: any) {
+	query.forEach((q: any) => {
+		if (Object.keys(q).length === 0) {
+			throw new InsightError();
+		}
 
-function checkValidOR(query: any) {
-	return;
+		checkValidWhere(q);
+	});
 }
 
 function checkValidSComparator(query: any) {
 	return;
+}
+
+function checkValidNOTComparator(query: any) {
+	if (typeof query !== "object") {
+		throw new InsightError();
+	}
+
+	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
+		throw new InsightError();
+	}
 }
 
 function checkValidOptions(options: any) {
@@ -256,16 +268,6 @@ function checkValidID(options: any) {
 	}
 
 	return id;
-}
-
-function checkValidNOTComparator(query: any) {
-	if (typeof query !== "object") {
-		throw new InsightError();
-	}
-
-	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
-		throw new InsightError();
-	}
 }
 
 export {filterData, filterOptions, checkValidID, checkValidQuery};

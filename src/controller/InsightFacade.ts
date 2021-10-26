@@ -138,7 +138,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		let id: string = checkValidQuery(query);
-		let id: string = checkValidID(options);
+		// let id: string = checkValidID(options);
 		let dataset: any[] = this.findDataset(id);
 
 		if (Object.keys(where).length !== 0) {
