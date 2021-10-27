@@ -109,7 +109,7 @@ export default class InsightFacade implements IInsightFacade {
 			return Promise.resolve([]);
 		});
 
-		return Promise.reject("add failed");
+		return Promise.resolve([]);
 		/*
 		console.log("array", array);
 		this.data = array;
@@ -133,7 +133,7 @@ export default class InsightFacade implements IInsightFacade {
 		const where: Record<string, any> = query.WHERE;
 		const options: Record<string, any> = query.OPTIONS;
 		let filteredData: any[] = [];
-		console.log("data", this._data);
+
 		if (!options) {
 			throw new InsightError();
 		}

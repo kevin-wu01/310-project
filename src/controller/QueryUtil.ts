@@ -40,7 +40,7 @@ function filterAND(data: any[], queryArray: any): any[] {
 		queryResults.push(filterData(data, query));
 	}
 
-	queryResults = queryResults.reduce((a, b) => a.filter((c: any) => b.includes(c))); // intersection of multiple arrays
+	queryResults = queryResults.reduce((a, b) => a.filter((c: any) => b.includes(c)));
 
 	return queryResults;
 }
@@ -60,16 +60,6 @@ function filterOR(data: any[], queryArray: any): any[] {
 
 
 	return queryResults;
-}
-
-function checkValidArrayComparator(queryArray: any) {
-	if (!Array.isArray(queryArray)) {
-		throw new InsightError();
-	}
-
-	if (queryArray.length === 0) {
-		throw new InsightError();
-	}
 }
 
 function filterMComparator(data: any[], comparator: string, field: string, value: number): any[] {
@@ -105,11 +95,6 @@ function filterOptions(data: any[], query: any): any[] {
 		throw new InsightError();
 	}
 
-	checkValidKey(sortColumn);
-	for (let key of dataColumns) {
-		checkValidKey(key.split("_")[1]);
-	}
-
 	for (let section = 0; section < data.length; section++) {
 		filteredData.push({});
 
@@ -124,13 +109,6 @@ function filterOptions(data: any[], query: any): any[] {
 	});
 
 	return filteredData;
-}
-
-function checkValidKey(key: string): void {
-	const validKeys: string[] = ["avg", "pass", "fail", "audit", "year", "dept", "id", "instructor", "title", "uuid"];
-	if (!validKeys.includes(key)) {
-		throw new InsightError();
-	}
 }
 
 function filterSComparator(data: any[], field: string, value: string) {
