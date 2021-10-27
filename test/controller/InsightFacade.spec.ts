@@ -297,7 +297,6 @@ describe("InsightFacade", function(this: Suite) {
 				response = await facade.performQuery(query.query);
 				assert.fail("queried empty dataset");
 			} catch (e) {
-				console.log(e, "error");
 				expect(e).to.be.instanceOf(InsightError);
 			}
 		});
