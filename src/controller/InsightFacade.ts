@@ -13,6 +13,8 @@ import * as fs from "fs";
  */
 export default class InsightFacade implements IInsightFacade {
 
+	private addedIds = new Map();
+
 	private set data(value: any[]) {
 		this._data = value;
 	}
@@ -65,51 +67,121 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+		if (id.includes("_")) {
+			throw new InsightError("id has underscore");
+		}
+
+		// https://stackoverflow.com/questions/10261986/how-to-detect-string-which-contains-only-spaces/50971250
+		if (!id.replace(/\s/g, "").length) {
+			throw new InsightError("id only has whitespaces");
+		}
+
+		let keys = Array.from( this.addedIds.keys() );
+		if (keys.includes(id)) {
+			throw new InsightError("id already exists");
+		}
+
+
+		// const fse = require('fs-extra');
+
+		// https://flaviocopes.com/how-to-check-if-file-exists-node/
+
+		// const path = './addedlist.txt'
+
+
+		// try {
+		// 	if (fse.existsSync(path)) {
+		// 	  //file exists
+
+		// 		// https://stuk.github.io/jszip/documentation/howto/read_zip.html
+		// 	  var JSZip = require("jszip");
+
+		// 	  new JSZip.external.Promise(function (resolve, reject) {
+		// 		fs.readFile("test.zip", function(err, data) {
+		// 			if (err) {
+		// 				reject(e);
+		// 			} else {
+		// 				resolve(data);
+		// 			}
+		// 		});
+		// 	}).then(function (data) {
+		// 		return JSZip.loadAsync(data);
+		// 	})
+		// 	.then(...)
+		// 	}
+		//   } catch(err) {
+		// 	  // https://flaviocopes.com/how-to-create-empty-file-node/
+		// 	const fd = fse.openSync(path, 'w');
+
+		// 	fs.closeSync(fd);
+		//   }
+
+
 		let zip = new JSZip();
-		let array: any[] = [];
-		// let buffer = new Buffer(content, "base64");
+		// let array: any[] = [];
+		// console.log("yooooooooooooooo");
+		// // let buffer = new Buffer(content, "base64");
 
-		await zip.loadAsync(content, {base64: true}).then(async (contents) => {
-			/*
-			Object.keys(contents.files).forEach((fileName) => {
-				// console.log(fileName);
-				zip.file(fileName)?.async("string").then((text) => {
-					// console.log(text.substring(0,10));
-					console.log(this.data);
-					this.data.push(text);
-					// console.log(array);
-					// console.log("this.data", this.data[0].substr(1, 20));
-				});
+		await zip.loadAsync(content, {base64: true}).then((contents) => {
+			let promArray: Array<Promise<string>> = [];
+			contents.forEach(function (relativePath, file) {
+				promArray.push(file.async("string"));
 			});
-			*/
-			for (let fileName of Object.keys(contents.files)) {
-				await zip.file(fileName)?.async("string").then((text) => {
-					// console.log("also data", this.data);
-					array.push(text);
-					this.num = 1;
-					// console.log("num", this.num);
-				});
-			}
-			/*
-			for (let i = 0; i < Object.keys(contents.files).length; i++) {
-				await zip.file(Object.keys(contents.files)[i])?.async("string").then((text) => {
-					// console.log("also data", this.data);
-					array.push(text);
-					this.num = 1;
-					// console.log("num", this.num);
-				});
-			}
-			*/
-			//  console.log(array, "array");
-			this._data = array;
-			// console.log(this._data);
-			// console.log("outside num", this.num);
-			// this.data = array;
-			// console.log("data", this.data);
-			return Promise.resolve([]);
-		});
 
-		return Promise.resolve([]);
+			// Need to work here
+			Promise.all(promArray).then((resultingArray) => {
+				this.addedIds.set(id, resultingArray);
+			});
+
+			// return zip.loadAsync(content, {base64: true}).then((contents) => {
+			// 	let promArray: Array<Promise<string>> = [];
+			// 	contents.forEach(function (relativePath, file) {
+			// 		promArray.push(file.async("string"));
+			// 	});
+			// 	return Promise.all(promArray).then();}
+
+		// let
+		// contents.forEach
+
+		// Object.keys(contents.files).forEach((fileName) => {
+		// 	// console.log(fileName);
+		// 	zip.file(fileName)?.async("string").then((text) => {
+		// 		// console.log(text.substring(0,10));
+		// 		console.log(this.data);
+		// 		this.data.push(text);
+				// console.log(array);
+				// console.log("this.data", this.data[0].substr(1, 20));
+		// 	});
+		// });
+
+		// 	for (let fileName of Object.keys(contents.files)) {
+		// 		await zip.file(fileName)?.async("string").then((text) => {
+		// 			// console.log("also data", this.data);
+		// 			array.push(text);
+		// 			this.num = 1;
+		// 			// console.log("num", this.num);
+		// 		});
+		// 	}
+		// 	/*
+		// 	for (let i = 0; i < Object.keys(contents.files).length; i++) {
+		// 		await zip.file(Object.keys(contents.files)[i])?.async("string").then((text) => {
+		// 			// console.log("also data", this.data);
+		// 			array.push(text);
+		// 			this.num = 1;
+		// 			// console.log("num", this.num);
+		// 		});
+		// 	}
+		// 	*/
+		// 	//  console.log(array, "array");
+		// 	this._data = array;
+		// 	console.log(this._data);
+		// 	// console.log("outside num", this.num);
+		// 	// this.data = array;
+		// 	// console.log("data", this.data);
+		// 	return Promise.resolve([]);
+		// });
+
+		// return Promise.reject("add failed");
 		/*
 		console.log("array", array);
 		this.data = array;
@@ -123,6 +195,16 @@ export default class InsightFacade implements IInsightFacade {
 		*/
 
 		// console.log(atob(content));
+
+		}).catch((error) => {
+			throw new InsightError("problem reading or writing");
+		});
+
+		// Need to work here
+		// addedIds.push(id);
+
+		keys = Array.from( this.addedIds.keys() );
+		return keys;
 	}
 
 	public removeDataset(id: string): Promise<string> {
