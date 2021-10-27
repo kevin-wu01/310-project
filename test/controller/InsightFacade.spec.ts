@@ -9,6 +9,7 @@ import {Context, Suite} from "mocha";
 // import chaiAsPromised from "chai-as-promised";
 import {getContentFromArchives, clearDisk, persistDir, Query, getQueries,
 	getQueryTooLarge, getInvalidQuery, getSimpleQuery, getBadPropertyQuery} from "../TestUtil";
+import {getBadIDQuery, getTwoDatasets} from "../BadQueryUtil";
 
 describe("InsightFacade", function(this: Suite) {
 	let courses: string;
@@ -308,6 +309,32 @@ describe("InsightFacade", function(this: Suite) {
 				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
 				response = await facade.performQuery(query.query);
 				assert.fail("queried non-existent property");
+			} catch (e) {
+				expect(e).to.be.instanceOf(InsightError);
+			}
+		});
+
+		it("query bad id", async function() {
+			try {
+				query = getBadIDQuery();
+				courses = getContentFromArchives(query.path);
+
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+				response = await facade.performQuery(query.query);
+				assert.fail("queried bad id");
+			} catch (e) {
+				expect(e).to.be.instanceOf(InsightError);
+			}
+		});
+
+		it("query two datasets", async function() {
+			try {
+				query = getTwoDatasets();
+				courses = getContentFromArchives(query.path);
+
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+				response = await facade.performQuery(query.query);
+				assert.fail("queried two datasets");
 			} catch (e) {
 				expect(e).to.be.instanceOf(InsightError);
 			}
