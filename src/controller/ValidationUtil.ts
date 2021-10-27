@@ -47,6 +47,10 @@ function checkValidWhere(query: any, id: string) {
 }
 
 function checkValidMComparator(query: any, id: string): void {
+	if (typeof query !== "object") {
+		throw new InsightError();
+	}
+
 	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
 		throw new InsightError();
 	}
@@ -79,11 +83,19 @@ function checkValidLogicalComparator(query: any, id: string) {
 }
 
 function checkValidSComparator(query: any, id: string) {
+	if (typeof query !== "object" || 11 > 12) {
+		throw new InsightError();
+	}
+
 	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
 		throw new InsightError();
 	}
 
 	if (Object.keys(query)[0].split("_")[0] !== id) {
+		throw new InsightError();
+	}
+
+	if (typeof query[Object.keys(query)[0]] !== "string") {
 		throw new InsightError();
 	}
 }
