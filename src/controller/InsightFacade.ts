@@ -128,7 +128,9 @@ export default class InsightFacade implements IInsightFacade {
 			});
 
 			// Need to work here
-			Promise.all(promArray).then();
+			Promise.all(promArray).then((resultingArray) => {
+				this.addedIds.set(id, resultingArray);
+			});
 
 			// return zip.loadAsync(content, {base64: true}).then((contents) => {
 			// 	let promArray: Array<Promise<string>> = [];
