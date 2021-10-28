@@ -121,7 +121,7 @@ export default class InsightFacade implements IInsightFacade {
 			});
 
 			this.addedIds.set(id, arraySections);
-			fs.writeFileSync("insightdata", Object.fromEntries(this.addedIds));
+			fs.writeFileSync("./insightdata", Object.fromEntries(this.addedIds));
 
 			return Array.from(this.addedIds.keys());
 
