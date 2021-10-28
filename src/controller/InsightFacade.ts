@@ -5,6 +5,20 @@ import {checkValidQuery} from "./ValidationUtil";
 import JSZip from "jszip";
 import * as fs from "fs";
 
+function checkFields(sectionData: any) {
+	if (("dept" in sectionData) && ("id" in sectionData) &&
+		("avg" in sectionData) &&
+		("instructor" in sectionData) &&
+		("title" in sectionData) &&
+		("pass" in sectionData) &&
+		("fail" in sectionData) &&
+		("audit" in sectionData) &&
+		("uuid" in sectionData) &&
+		("year" in sectionData)) {
+		return true;
+	}
+	return false;
+}
 
 /**
  * This is the main programmatic entry point for the project.
@@ -76,135 +90,44 @@ export default class InsightFacade implements IInsightFacade {
 			throw new InsightError("id only has whitespaces");
 		}
 
-		let keys = Array.from( this.addedIds.keys() );
-		if (keys.includes(id)) {
+		if (this.addedIds.has(id)) {
 			throw new InsightError("id already exists");
 		}
 
-
-		// const fse = require('fs-extra');
-
-		// https://flaviocopes.com/how-to-check-if-file-exists-node/
-
-		// const path = './addedlist.txt'
-
-
-		// try {
-		// 	if (fse.existsSync(path)) {
-		// 	  //file exists
-
-		// 		// https://stuk.github.io/jszip/documentation/howto/read_zip.html
-		// 	  var JSZip = require("jszip");
-
-		// 	  new JSZip.external.Promise(function (resolve, reject) {
-		// 		fs.readFile("test.zip", function(err, data) {
-		// 			if (err) {
-		// 				reject(e);
-		// 			} else {
-		// 				resolve(data);
-		// 			}
-		// 		});
-		// 	}).then(function (data) {
-		// 		return JSZip.loadAsync(data);
-		// 	})
-		// 	.then(...)
-		// 	}
-		//   } catch(err) {
-		// 	  // https://flaviocopes.com/how-to-create-empty-file-node/
-		// 	const fd = fse.openSync(path, 'w');
-
-		// 	fs.closeSync(fd);
-		//   }
-
-
 		let zip = new JSZip();
-		// let array: any[] = [];
-		// console.log("yooooooooooooooo");
-		// // let buffer = new Buffer(content, "base64");
 
-		await zip.loadAsync(content, {base64: true}).then((contents) => {
+		return zip.loadAsync(content, {base64: true}).then((contents) => {
 			let promArray: Array<Promise<string>> = [];
 			contents.forEach(function (relativePath, file) {
 				promArray.push(file.async("string"));
 			});
 
-			// Need to work here
+			let arraySections: any = [];
 			Promise.all(promArray).then((resultingArray) => {
-				this.addedIds.set(id, resultingArray);
+
+				for (let each of resultingArray) {
+					try {
+						let obj: any = JSON.parse(each);
+						// let result = obj.result;
+						for (let eachSub of obj.result) {
+							if (checkFields(eachSub)) {
+								arraySections.push(eachSub);
+							}
+						}
+					} catch (e) {
+						continue;
+					}
+				}
 			});
 
-			// return zip.loadAsync(content, {base64: true}).then((contents) => {
-			// 	let promArray: Array<Promise<string>> = [];
-			// 	contents.forEach(function (relativePath, file) {
-			// 		promArray.push(file.async("string"));
-			// 	});
-			// 	return Promise.all(promArray).then();}
+			this.addedIds.set(id, arraySections);
+			fs.writeFileSync("insightdata", Object.fromEntries(this.addedIds));
 
-		// let
-		// contents.forEach
-
-		// Object.keys(contents.files).forEach((fileName) => {
-		// 	// console.log(fileName);
-		// 	zip.file(fileName)?.async("string").then((text) => {
-		// 		// console.log(text.substring(0,10));
-		// 		console.log(this.data);
-		// 		this.data.push(text);
-				// console.log(array);
-				// console.log("this.data", this.data[0].substr(1, 20));
-		// 	});
-		// });
-
-		// 	for (let fileName of Object.keys(contents.files)) {
-		// 		await zip.file(fileName)?.async("string").then((text) => {
-		// 			// console.log("also data", this.data);
-		// 			array.push(text);
-		// 			this.num = 1;
-		// 			// console.log("num", this.num);
-		// 		});
-		// 	}
-		// 	/*
-		// 	for (let i = 0; i < Object.keys(contents.files).length; i++) {
-		// 		await zip.file(Object.keys(contents.files)[i])?.async("string").then((text) => {
-		// 			// console.log("also data", this.data);
-		// 			array.push(text);
-		// 			this.num = 1;
-		// 			// console.log("num", this.num);
-		// 		});
-		// 	}
-		// 	*/
-		// 	//  console.log(array, "array");
-		// 	this._data = array;
-		// 	console.log(this._data);
-		// 	// console.log("outside num", this.num);
-		// 	// this.data = array;
-		// 	// console.log("data", this.data);
-		// 	return Promise.resolve([]);
-		// });
-
-		// return Promise.reject("add failed");
-		/*
-		console.log("array", array);
-		this.data = array;
-		console.log("outside loop", this.data);
-
-		 */
-		/*
-		zip.loadAsync(content).then((contents) => {
-			console.log(contents);
-		});
-		*/
-
-		// console.log(atob(content));
+			return Array.from(this.addedIds.keys());
 
 		}).catch((error) => {
 			throw new InsightError("problem reading or writing");
 		});
-
-		// Need to work here
-		// addedIds.push(id);
-
-		keys = Array.from( this.addedIds.keys() );
-		return keys;
 	}
 
 	public removeDataset(id: string): Promise<string> {
