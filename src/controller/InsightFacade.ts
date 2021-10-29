@@ -145,9 +145,9 @@ export default class InsightFacade implements IInsightFacade {
 
 		let id: string = checkValidQuery(query);
 		let dataset: any[] = this.findDataset(id);
-		return Promise.resolve([]); // test for validation
+
 		if (Object.keys(where).length !== 0) {
-			filteredData = filterData(dataset, where);
+			filteredData = filterData(this.addedIds.get(id), where);
 		} else {
 			filteredData = []; // stub
 		}

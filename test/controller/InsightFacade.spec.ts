@@ -79,6 +79,14 @@ describe("InsightFacade", function(this: Suite) {
 			errorString = "";
 		});
 
+		it("add valid dataset", async function() {
+			try {
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+			} catch(e) {
+				assert.fail("failed to add dataset");
+			}
+		});
+
 		it("add dataset with underscore id", async function() {
 			try {
 				await facade.addDataset("courses_", courses, InsightDatasetKind.Courses);
