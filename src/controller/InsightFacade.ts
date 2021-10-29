@@ -3,18 +3,18 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind,
 import {filterData, filterOptions } from "./QueryUtil";
 import {checkValidQuery} from "./ValidationUtil";
 import JSZip from "jszip";
-import * as fs from "fs";
+import * as fs from "fs-extra";
 
 function checkFields(sectionData: any) {
-	if (("dept" in sectionData) && ("id" in sectionData) &&
-		("avg" in sectionData) &&
-		("instructor" in sectionData) &&
-		("title" in sectionData) &&
-		("pass" in sectionData) &&
-		("fail" in sectionData) &&
-		("audit" in sectionData) &&
-		("uuid" in sectionData) &&
-		("year" in sectionData)) {
+	if (("Subject" in sectionData) && ("id" in sectionData) &&
+		("Avg" in sectionData) &&
+		("Professor" in sectionData) &&
+		("Title" in sectionData) &&
+		("Pass" in sectionData) &&
+		("Fail" in sectionData) &&
+		("Audit" in sectionData) &&
+		("id" in sectionData) &&
+		("Year" in sectionData)) {
 		return true;
 	}
 	return false;
@@ -41,43 +41,6 @@ export default class InsightFacade implements IInsightFacade {
 		// let dataObject: any[] = [];
 		this._data = [];
 		this.num = 0;
-
-// 		fs.readFile("./test/data/courses2.zip", (err, data) => {
-// 			console.log("data", data);
-// 			if (!err) {
-// 				let zip = new JSZip();
-// 				zip.loadAsync(data).then((contents) => {
-// 					console.log("contents", contents);
-// 					Object.keys(contents.files).forEach((filename) => {
-// 						zip.file(filename)?.async("string").then((text) => {
-// 							dataObject.push(text);
-// 						});
-// 					});
-// 					// console.log(dataObject);
-// 					/*
-// 					contents.folder("courses").forEach(function (filename, file) {
-// 						console.log(filename);
-// 						console.log("file", file);
-// 					});
-// 					if (typeof Object.values(contents) !== null) {
-// 						Object.values(contents).forEach((course: any) => {
-// 							this.data.push(course);
-// 						});
-// 					}
-// 					*/
-// 					// console.log("first index", this.data[0]);
-// 					// console.log("this.data", this.data);
-// 					/*
-// 					Object.keys(contents.files).forEach(function(filename) {
-// 						console.log("filename", filename);
-// 						zip.file(filename)!.async("nodebuffer").then(function(content) {
-// 							console.log("zip file", content);
-// 						});
-// 					});
-// 					 */
-// 				});
-// 			}
-// 		});
 	}
 
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
@@ -97,18 +60,20 @@ export default class InsightFacade implements IInsightFacade {
 		let zip = new JSZip();
 
 		return zip.loadAsync(content, {base64: true}).then((contents) => {
+
 			let promArray: Array<Promise<string>> = [];
 			contents.forEach(function (relativePath, file) {
 				promArray.push(file.async("string"));
 			});
 
 			let arraySections: any = [];
-			Promise.all(promArray).then((resultingArray) => {
-
+			return Promise.all(promArray).then((resultingArray) => {
+				// console.log("rA length : ", resultingArray.length);
 				for (let each of resultingArray) {
 					try {
 						let obj: any = JSON.parse(each);
 						// let result = obj.result;
+						// console.log(obj.result.length);
 						for (let eachSub of obj.result) {
 							if (checkFields(eachSub)) {
 								arraySections.push(eachSub);
@@ -118,12 +83,21 @@ export default class InsightFacade implements IInsightFacade {
 						continue;
 					}
 				}
+
+				// console.log("aS length: ", arraySections.length);
+				arraySections.push(kind);
+				this.addedIds.set(id, arraySections);
+				// console.log("nlkfnglksndlngf");
+				// fs.writeJSON("./data/insightData.json", Object.fromEntries(this.addedIds)).then(() => 
+				// {return Array.from(this.addedIds.keys());}).catch((e) => {console.log(e)});
+
+				// console.log(process.cwd());
+				// console.log(this.addedIds.size);
+				// console.log(this.addedIds.get("courses").length);
+				return Array.from(this.addedIds.keys());
+
 			});
-
-			this.addedIds.set(id, arraySections);
-			fs.writeFileSync("./insightdata", Object.fromEntries(this.addedIds));
-
-			return Array.from(this.addedIds.keys());
+			
 
 		}).catch((error) => {
 			throw new InsightError("problem reading or writing");
@@ -174,7 +148,12 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	public listDatasets(): Promise<InsightDataset[]> {
-		return Promise.reject("Not implemented.");
+	public async listDatasets(): Promise<InsightDataset[]> {
+		let arrayAddedsets: InsightDataset[] = [];
+
+		for (const [key,value] of this.addedIds.entries()) {
+			arrayAddedsets.push({id: key, kind: value[value.length - 1], numRows: value.length - 1});
+		}
+		return arrayAddedsets;
 	}
 }
