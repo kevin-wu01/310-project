@@ -9,7 +9,8 @@ import {Context, Suite} from "mocha";
 // import chaiAsPromised from "chai-as-promised";
 import {getContentFromArchives, clearDisk, persistDir, Query, getQueries,
 	getQueryTooLarge, getInvalidQuery, getSimpleQuery, getBadPropertyQuery} from "../TestUtil";
-import {getBadIDQuery, getTwoDatasets} from "../BadQueryUtil";
+import {getNOTQuery, getBadIDQuery, getTwoDatasets} from "../QueryUtil";
+// import {getBadIDQuery, getTwoDatasets, getNOTQuery} from "../QueryUtil";
 
 describe("InsightFacade", function(this: Suite) {
 	let courses: string;
@@ -245,6 +246,26 @@ describe("InsightFacade", function(this: Suite) {
 					clearDisk();
 					facade = new InsightFacade();
 				}
+			}
+		});
+
+		it("query NOT comparator", async function() {
+			try {
+				query = getNOTQuery();
+				courses = getContentFromArchives(query.path);
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+
+				response = await facade.performQuery(query.query);
+			} catch (e) {
+				assert.fail("query failed to run");
+			}
+		});
+
+		it("query wildcard IS", async function() {
+			try {
+
+			} catch (e) {
+				assert.fail("query failed to run");
 			}
 		});
 
