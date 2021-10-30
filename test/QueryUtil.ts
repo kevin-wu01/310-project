@@ -248,7 +248,7 @@ function getNOTQuery(): Query {
 
 	return({query, path: "courses.zip", resultObject: resultObject1});
 }
-
+/*
 function getWildcardQuery(): Query {
 	let query: Record<string, any>;
 
@@ -277,5 +277,5 @@ function getWildcardQuery(): Query {
 		}
 	};
 }
-
+*/
 export {getBadIDQuery, getTwoDatasets, getNOTQuery};

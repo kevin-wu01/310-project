@@ -123,19 +123,25 @@ function filterSComparator(data: any[], field: string, value: string) {
 	let filteredData: any[];
 	let dataKey: string = getDataKey(field.split("_")[1]);
 
+
+	filteredData = data.filter((dataClass) => {
+		return dataClass[dataKey] === value;
+	});
+	/*
 	if (!value.contains("*")) {
 		filteredData = data.filter((dataClass) => {
-			return dataClass[dataKey] === value;
+			returng dataClass[dataKey] === value;
 		});
 	} else {
 		filteredData = data.filter((dataClass) => {
 			return checkWildcardString(dataClass, value);
 		});
 	}
+	*/
 
 	return filteredData;
 }
-
+/*
 function checkValidWildcardString() {
 	return;
 }
@@ -143,7 +149,7 @@ function checkValidWildcardString() {
 function checkWildcardString() {
 	return;
 }
-
+*/
 function getDataKey(key: string) {
 	let dataKey: string;
 

@@ -268,7 +268,7 @@ describe("InsightFacade", function(this: Suite) {
 				assert.fail("query failed to run");
 			}
 		});
-
+		/*
 		it("query wildcard IS", async function() {
 			try {
 
@@ -276,7 +276,7 @@ describe("InsightFacade", function(this: Suite) {
 				assert.fail("query failed to run");
 			}
 		});
-
+		*/
 		it("query result too large", async function() {
 			try {
 				query = getQueryTooLarge();
