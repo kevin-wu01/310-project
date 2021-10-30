@@ -87,25 +87,39 @@ export default class InsightFacade implements IInsightFacade {
 				// console.log("aS length: ", arraySections.length);
 				arraySections.push(kind);
 				this.addedIds.set(id, arraySections);
-				// console.log("nlkfnglksndlngf");
-				// fs.writeJSON("./data/insightData.json", Object.fromEntries(this.addedIds)).then(() => 
-				// {return Array.from(this.addedIds.keys());}).catch((e) => {console.log(e)});
-
-				// console.log(process.cwd());
-				// console.log(this.addedIds.size);
-				// console.log(this.addedIds.get("courses").length);
+				fs.mkdirsSync("data");
+				fs.writeFileSync("data/insightDataset", JSON.stringify(Object.fromEntries(this.addedIds)));
 				return Array.from(this.addedIds.keys());
 
 			});
-			
 
 		}).catch((error) => {
 			throw new InsightError("problem reading or writing");
 		});
 	}
 
-	public removeDataset(id: string): Promise<string> {
-		return Promise.resolve("");
+	public async removeDataset(id: string): Promise<string> {
+
+		if (id.includes("_")) {
+			throw new InsightError("id has underscore");
+		}
+
+		// https://stackoverflow.com/questions/10261986/how-to-detect-string-which-contains-only-spaces/50971250
+		if (!id.replace(/\s/g, "").length) {
+			throw new InsightError("id only has whitespaces");
+		}
+
+		if (!(Array.from(this.addedIds.keys()).includes(id))) {
+			throw new NotFoundError("id not added yet");
+		}
+
+		return fs.readFile("data/insightDataset", "string").then((contents) => {
+			this.addedIds.delete(id);
+			let obj: any = new Map(JSON.parse(contents));
+			obj.delete(id);
+			fs.writeFileSync("data/insightDataset", JSON.stringify(Object.fromEntries(obj)));
+			return id;
+		});
 	}
 
 	public performQuery(query: any): Promise<any[]> {
