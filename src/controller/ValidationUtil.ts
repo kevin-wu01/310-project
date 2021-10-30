@@ -181,7 +181,7 @@ function checkValidOptions(options: any) {
 	});
 
 	if (order) {
-		if (id !== order.split("_")[0]) {
+		if (id !== order.split("_")[0] || !columns.includes(order)) {
 			throw new InsightError();
 		}
 

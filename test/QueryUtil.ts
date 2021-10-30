@@ -278,4 +278,25 @@ function getWildcardQuery(): Query {
 	};
 }
 */
-export {getBadIDQuery, getTwoDatasets, getNOTQuery};
+
+function getGTQuery(): Query {
+	let query: Record<string, any>;
+
+	query = {
+		WHERE: {
+			GT: {
+				courses_audit: 20
+			}
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_pass"
+			],
+			ORDER: "courses_pass"
+		}
+	};
+
+	return({query, path: "courses.zip", resultObject: [{courses_dept:"cpsc",courses_audit:21},{courses_dept:"rhsc",courses_audit:21},{courses_dept:"rhsc",courses_audit:23}]});
+}
+export {getBadIDQuery, getTwoDatasets, getNOTQuery, getGTQuery};

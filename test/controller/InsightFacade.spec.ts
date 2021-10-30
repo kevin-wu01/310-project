@@ -9,7 +9,7 @@ import {Context, Suite} from "mocha";
 // import chaiAsPromised from "chai-as-promised";
 import {getContentFromArchives, clearDisk, persistDir, Query, getQueries,
 	getQueryTooLarge, getInvalidQuery, getSimpleQuery, getBadPropertyQuery} from "../TestUtil";
-import {getNOTQuery, getBadIDQuery, getTwoDatasets} from "../QueryUtil";
+import {getNOTQuery, getBadIDQuery, getTwoDatasets, getGTQuery} from "../QueryUtil";
 // import {getBadIDQuery, getTwoDatasets, getNOTQuery} from "../QueryUtil";
 
 describe("InsightFacade", function(this: Suite) {
@@ -18,7 +18,7 @@ describe("InsightFacade", function(this: Suite) {
 	before(function() {
 		courses = getContentFromArchives("courses.zip");
 	});
-
+	/*
 	describe("List Datasets", function() {
 		let facade: IInsightFacade = new InsightFacade();
 
@@ -225,7 +225,7 @@ describe("InsightFacade", function(this: Suite) {
 			}
 		});
 	});
-
+	*/
 	describe("Query Datasets", function() {
 		let facade: IInsightFacade = new InsightFacade();
 		let queries: Query[] = getQueries();
@@ -237,6 +237,18 @@ describe("InsightFacade", function(this: Suite) {
 			facade = new InsightFacade();
 			response = [];
 			courses = "";
+		});
+
+		it("query GT comparator", async function() {
+			try {
+				query = getGTQuery();
+				courses = getContentFromArchives(query.path);
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+
+				response = await facade.performQuery(query.query);
+			} catch (e) {
+				assert.fail("query failed to run");
+			}
 		});
 
 		it("run working queries", async function () {
