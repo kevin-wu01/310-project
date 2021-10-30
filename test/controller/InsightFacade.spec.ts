@@ -12,7 +12,7 @@ import {getContentFromArchives, clearDisk, persistDir, Query, getQueries,
 import {getNOTQuery, getBadIDQuery, getTwoDatasets} from "../QueryUtil";
 // import {getWildcardQuery, getGTQuery} from "../MoreQueryUtil";
 // mport {getWildcardQuery, getGTQuery} from "../MoreQueryUtil";
-// eslint-disable-next-line import/namespace
+
 import {getGTQuery, getWildcardQuery} from "../MoreQueryUtil";
 // import {getBadIDQuery, getTwoDatasets, getNOTQuery} from "../QueryUtil";
 
