@@ -75,27 +75,54 @@ function filterMComparator(data: any[], comparator: string, field: string, value
 	switch(comparator) {
 		case "LT":
 			filteredData = data.filter((dataClass) => {
-				return dataClass[dataKey] < value;
+				if (dataKey === "Year") {
+					return checkIsOverall(dataClass) < value;
+				} else {
+					return dataClass[dataKey] < value;
+				}
 			});
 			break;
 		case "GT":
 			filteredData = data.filter((dataClass) => {
-				return dataClass[dataKey] > value;
+				if (dataKey === "Year") {
+					return checkIsOverall(dataClass) > value;
+				} else {
+					return dataClass[dataKey] > value;
+				}
 			});
 			break;
 		case "EQ":
 			filteredData = data.filter((dataClass) => {
-				return dataClass[dataKey] === value;
+				if (dataKey === "Year") {
+					return checkIsOverall(dataClass) === value;
+				} else {
+					return dataClass[dataKey] === value;
+				}
 			});
 			break;
 	}
-
+	/*
+	console.log(filteredData, "filter M");
+	console.log(field, "field");
+	console.log(value, "value");
+	*/
 	return filteredData;
+}
+
+function checkIsOverall(dataObject: any): number {
+	// console.log(dataObject, "dataObject");
+	if (dataObject.Section === "overall") {
+		// console.log("is overall!");
+		return 1900;
+	} else {
+		return dataObject["Year"];
+	}
 }
 
 function filterOptions(data: any[], query: any): any[] {
 	const dataColumns: string[] = query.COLUMNS;
-	const sortColumn: string = query.ORDER.split("_")[1];
+	const sortColumn: string = query.ORDER;
+	const sort: string = query.ORDER.split("_")[1];
 	let filteredData: any[] = [];
 
 	for (let section = 0; section < data.length; section++) {
@@ -103,14 +130,37 @@ function filterOptions(data: any[], query: any): any[] {
 
 		for (let key of dataColumns) {
 			let dataKey: string = getDataKey(key.split("_")[1]);
-			filteredData[section][key] = data[section][dataKey];
+			switch (dataKey) {
+				case "id":
+					filteredData[section][key] = data[section][dataKey].toString();
+					break;
+				case "Year":
+					filteredData[section][key] = parseInt(data[section][dataKey], 10);
+					break;
+				default: filteredData[section][key] = data[section][dataKey];
+			}
+			/*
+			if (dataKey === "id") {
+				filteredData[section][key] = data[section][dataKey].toString();
+			} else {
+				filteredData[section][key] = data[section][dataKey];
+			}
+			*/
 		}
 	}
+	/*
+	if (typeof filteredData[0][sortColumn] === "number") {
+		filteredData.sort((a,b) => {
+			return a[sortColumn] > b[sortColumn] ? 1 : -1;
+		});
+	} else {
 
+	}
+	*/
 	filteredData.sort((a,b) => {
-		return a[sortColumn] - b[sortColumn];
+		return a[sortColumn] > b[sortColumn] ? 1 : -1;
 	});
-
+	// console.log(filteredData, "sorted data");
 	return filteredData;
 }
 
@@ -123,22 +173,30 @@ function filterSComparator(data: any[], field: string, value: string) {
 	let filteredData: any[];
 	let dataKey: string = getDataKey(field.split("_")[1]);
 
-
 	filteredData = data.filter((dataClass) => {
 		return dataClass[dataKey] === value;
 	});
 	/*
-	if (!value.contains("*")) {
+	if (!value.includes("*")) {
 		filteredData = data.filter((dataClass) => {
-			returng dataClass[dataKey] === value;
+			return dataClass[dataKey] === value;
 		});
 	} else {
+
+		console.log(data.length, "before filter");
+		let replaceThis = "John";
+		let re = new RegExp(`\\b${replaceThis}\\b`, "gi");
+
+		"mystring1".replace(re, "newstring");
+		console.log(re, "re");
 		filteredData = data.filter((dataClass) => {
-			return checkWildcardString(dataClass, value);
+			let regex = /^.*sc/;
+			return /^.*sc/.test(dataClass[dataKey]);
 		});
+		console.log(filteredData.length, "after filter");
+
 	}
 	*/
-
 	return filteredData;
 }
 /*

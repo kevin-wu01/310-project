@@ -133,6 +133,11 @@ export default class InsightFacade implements IInsightFacade {
 
 		let id: string = checkValidQuery(query);
 		let dataset: any[] = this.findDataset(id);
+		let data: any[] = this.addedIds.get(id);
+
+		if (typeof data === "undefined") {
+			throw new InsightError();
+		}
 
 		if (Object.keys(where).length !== 0) {
 			filteredData = filterData(this.addedIds.get(id), where);
@@ -145,21 +150,12 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		filteredData = filterOptions(filteredData, options);
-
+		// console.log(filteredData, "filteredData");
 		return Promise.resolve(filteredData);
 	}
 
 	private findDataset(id: string): any[] {
 		return [];
-	}
-
-	private checkValidKey(key: string): void {
-		const validKeys: string[] = ["avg", "pass", "fail", "audit", "year",
-			"dept", "id", "instructor", "title", "uuid"];
-
-		if (!validKeys.includes(key)) {
-			throw new InsightError();
-		}
 	}
 
 	public async listDatasets(): Promise<InsightDataset[]> {

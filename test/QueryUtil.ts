@@ -248,34 +248,5 @@ function getNOTQuery(): Query {
 
 	return({query, path: "courses.zip", resultObject: resultObject1});
 }
-/*
-function getWildcardQuery(): Query {
-	let query: Record<string, any>;
 
-	query = {
-		WHERE: {
-			AND: [
-				{
-					GT: {
-						courses_avg: 94
-					}
-				},
-				{
-					IS: {
-						courses_dept: "*sc"
-					}
-				}
-			]
-		},
-		OPTIONS: {
-			COLUMNS: [
-				"courses_dept",
-				"courses_id",
-				"courses_avg"
-			],
-			ORDER: "courses_avg"
-		}
-	};
-}
-*/
 export {getBadIDQuery, getTwoDatasets, getNOTQuery};

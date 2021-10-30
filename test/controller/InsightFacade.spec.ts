@@ -10,6 +10,10 @@ import {Context, Suite} from "mocha";
 import {getContentFromArchives, clearDisk, persistDir, Query, getQueries,
 	getQueryTooLarge, getInvalidQuery, getSimpleQuery, getBadPropertyQuery} from "../TestUtil";
 import {getNOTQuery, getBadIDQuery, getTwoDatasets} from "../QueryUtil";
+// import {getWildcardQuery, getGTQuery} from "../MoreQueryUtil";
+// mport {getWildcardQuery, getGTQuery} from "../MoreQueryUtil";
+
+import {getGTQuery, getWildcardQuery} from "../MoreQueryUtil";
 // import {getBadIDQuery, getTwoDatasets, getNOTQuery} from "../QueryUtil";
 
 describe("InsightFacade", function(this: Suite) {
@@ -239,6 +243,36 @@ describe("InsightFacade", function(this: Suite) {
 			courses = "";
 		});
 
+		it("query wildcard IS", async function() {
+			try {
+				query = getWildcardQuery();
+				courses = getContentFromArchives(query.path);
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+
+				response = await facade.performQuery(query.query);
+				expect(response).to.have.length(query.resultObject.length);
+				expect(response).to.have.deep.members(query.resultObject);
+			} catch (e) {
+				assert.fail("query failed to run");
+			}
+		});
+
+		it("query GT comparator", async function() {
+			try {
+				query = getGTQuery();
+				courses = getContentFromArchives(query.path);
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+
+				response = await facade.performQuery(query.query);
+				// console.log(response, "response");
+				// console.log(query.resultObject, "expected value");
+				expect(response).to.have.length(query.resultObject.length);
+				expect(response).to.have.deep.members(query.resultObject);
+			} catch (e) {
+				assert.fail("query failed to run");
+			}
+		});
+
 		it("run working queries", async function () {
 			for (let queryItem of queries) {
 				try {
@@ -264,19 +298,13 @@ describe("InsightFacade", function(this: Suite) {
 				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
 
 				response = await facade.performQuery(query.query);
+				expect(response).to.have.length(query.resultObject.length);
+				expect(response).to.have.deep.members(query.resultObject);
 			} catch (e) {
 				assert.fail("query failed to run");
 			}
 		});
-		/*
-		it("query wildcard IS", async function() {
-			try {
 
-			} catch (e) {
-				assert.fail("query failed to run");
-			}
-		});
-		*/
 		it("query result too large", async function() {
 			try {
 				query = getQueryTooLarge();
