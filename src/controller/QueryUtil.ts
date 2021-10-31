@@ -70,44 +70,77 @@ function filterOR(data: any[], queryArray: any): any[] {
 
 function filterMComparator(data: any[], comparator: string, field: string, value: number): any[] {
 	let filteredData: any[] = [];
+	let dataYear: number;
 	const dataKey: string = getDataKey(field.split("_")[1]);
 
 	switch(comparator) {
 		case "LT":
 			filteredData = data.filter((dataClass) => {
+				dataYear = checkIsOverall(dataClass);
+				if (dataYear === 1900) {
+					dataClass.Year = 1900;
+				}
+
+				return dataClass[dataKey] < value;
+				/*
 				if (dataKey === "Year") {
-					return checkIsOverall(dataClass) < value;
+					dataYear = checkIsOverall(dataClass);
+					if (dataYear === 1900) {
+						dataClass.Year = 1900;
+					}
+					return dataYear < value;
 				} else {
 					return dataClass[dataKey] < value;
 				}
+				*/
 			});
 			break;
 		case "GT":
 			filteredData = data.filter((dataClass) => {
+				dataYear = checkIsOverall(dataClass);
+				if (dataYear === 1900) {
+					dataClass.Year = 1900;
+				}
+
+				return dataClass[dataKey] > value;
+				/*
 				if (dataKey === "Year") {
-					return checkIsOverall(dataClass) > value;
+					dataYear = checkIsOverall(dataClass);
+					if (dataYear === 1900) {
+						dataClass.Year = 1900;
+					}
+					return dataYear > value;
 				} else {
 					return dataClass[dataKey] > value;
 				}
+				*/
 			});
 			break;
 		case "EQ":
 			filteredData = data.filter((dataClass) => {
+				dataYear = checkIsOverall(dataClass);
+				if (dataYear === 1900) {
+					dataClass.Year = 1900;
+				}
+
+				return dataClass[dataKey] === value;
+				/*
 				if (dataKey === "Year") {
-					return checkIsOverall(dataClass) === value;
+					if (dataYear === 1900) {
+						dataClass.Year = 1900;
+					}
+					return dataYear === value;
 				} else {
 					return dataClass[dataKey] === value;
 				}
+				*/
 			});
 			break;
 	}
-	/*
-	console.log(filteredData, "filter M");
-	console.log(field, "field");
-	console.log(value, "value");
-	*/
+
 	return filteredData;
 }
+
 
 function checkIsOverall(dataObject: any): number {
 	// console.log(dataObject, "dataObject");
@@ -122,7 +155,6 @@ function checkIsOverall(dataObject: any): number {
 function filterOptions(data: any[], query: any): any[] {
 	const dataColumns: string[] = query.COLUMNS;
 	const sortColumn: string = query.ORDER;
-	const sort: string = query.ORDER.split("_")[1];
 	let filteredData: any[] = [];
 
 	for (let section = 0; section < data.length; section++) {
@@ -139,75 +171,83 @@ function filterOptions(data: any[], query: any): any[] {
 					break;
 				default: filteredData[section][key] = data[section][dataKey];
 			}
-			/*
-			if (dataKey === "id") {
-				filteredData[section][key] = data[section][dataKey].toString();
-			} else {
-				filteredData[section][key] = data[section][dataKey];
-			}
-			*/
 		}
 	}
-	/*
-	if (typeof filteredData[0][sortColumn] === "number") {
-		filteredData.sort((a,b) => {
-			return a[sortColumn] > b[sortColumn] ? 1 : -1;
-		});
-	} else {
 
-	}
-	*/
 	filteredData.sort((a,b) => {
 		return a[sortColumn] > b[sortColumn] ? 1 : -1;
 	});
-	// console.log(filteredData, "sorted data");
+
 	return filteredData;
 }
 
 function filterSComparator(data: any[], field: string, value: string) {
-	/*
-	if (field !== "dept" && field !== "id" && field !== "instructor" && field !== "title" && field !== "uuid") {
-		throw new InsightError();
-	}
-	*/
 	let filteredData: any[];
 	let dataKey: string = getDataKey(field.split("_")[1]);
+	let dataYear: number;
 
-	filteredData = data.filter((dataClass) => {
-		return dataClass[dataKey] === value;
-	});
-	/*
 	if (!value.includes("*")) {
 		filteredData = data.filter((dataClass) => {
+			dataYear = checkIsOverall(dataClass);
+			if (dataYear === 1900) {
+				dataClass.Year = 1900;
+			}
+
 			return dataClass[dataKey] === value;
 		});
 	} else {
+		let pattern = checkValidWildcardString(value);
 
-		console.log(data.length, "before filter");
-		let replaceThis = "John";
-		let re = new RegExp(`\\b${replaceThis}\\b`, "gi");
-
-		"mystring1".replace(re, "newstring");
-		console.log(re, "re");
 		filteredData = data.filter((dataClass) => {
-			let regex = /^.*sc/;
-			return /^.*sc/.test(dataClass[dataKey]);
-		});
-		console.log(filteredData.length, "after filter");
+			dataYear = checkIsOverall(dataClass);
+			if (dataYear === 1900) {
+				dataClass.Year = 1900;
+			}
 
+			return pattern.test(dataClass[dataKey]);
+		});
 	}
-	*/
+
 	return filteredData;
 }
-/*
-function checkValidWildcardString() {
-	return;
+
+function checkValidWildcardString(wildcardString: string) {
+	let indices: number[] = [];
+	let matchChar = wildcardString.replace("*", "");
+	matchChar = matchChar.replace("*", "");
+	let pattern;
+
+	for (let i = 0; i < wildcardString.length; i++) {
+		if (wildcardString[i] === "*") {
+			indices.push(i);
+		}
+	}
+
+	if (indices.length > 2) {
+		throw new InsightError();
+	}
+
+	if (indices.length === 1) {
+		switch (indices[0]) {
+			case 0:
+				pattern = new RegExp(`^.*${matchChar}$`);
+				break;
+			case wildcardString.length - 1:
+				pattern = new RegExp(`^${matchChar}.*$`);
+				break;
+			default: throw new InsightError("wildcard must be in beginning or end of string");
+		}
+	} else {
+		if (!(indices[0] === 0 && indices[1] === wildcardString.length - 1)) {
+			throw new InsightError("wildcard must be in beginning or end of string");
+		}
+
+		pattern = new RegExp(`^.*${matchChar}.*$`);
+	}
+
+	return pattern;
 }
 
-function checkWildcardString() {
-	return;
-}
-*/
 function getDataKey(key: string) {
 	let dataKey: string;
 
@@ -247,6 +287,5 @@ function getDataKey(key: string) {
 
 	return dataKey;
 }
-
 
 export {filterData, filterOptions};
