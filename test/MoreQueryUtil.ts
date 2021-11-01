@@ -21,8 +21,11 @@ const resultObject2 = [{courses_dept:"apsc",courses_avg:95.05},{courses_dept:"mu
 	{courses_dept:"apsc",courses_avg:95.95},{courses_dept:"apsc",courses_avg:96},
 	{courses_dept:"musc",courses_avg:96.5},{courses_dept:"musc",courses_avg:96.5}];
 
+const resultObject3 = [{courses_dept:"busi",courses_avg:4},{courses_dept:"chem",courses_avg:53}];
+
 function getGTQuery(): Query {
 	let query: Record<string, any>;
+	/*
 	query = {
 		WHERE: {
 			AND: [
@@ -69,7 +72,94 @@ function getGTQuery(): Query {
 			ORDER: "courses_uuid"
 		}
 	};
-	return ({query, path: "courses.zip", resultObject: resultObject1});
+	*/
+	/*
+	query = {
+		WHERE: {
+			AND: [
+				{
+					AND: [
+						{
+							LT: {
+								courses_avg: 20
+							}
+						},
+						{
+							LT: {
+								courses_avg: 50
+							}
+						}
+					]
+				},
+				{
+					LT: {
+						courses_avg: 10
+					}
+				}
+			]
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_audit",
+				"courses_avg"
+			],
+			ORDER: "courses_avg"
+		}
+	};
+	*/
+	/*
+	query = {
+		WHERE: {
+			AND: [
+				{
+					LT: {
+						courses_year: 1901
+					}
+				},
+				{
+					GT: {
+						courses_pass: 2000
+					}
+				}
+			]
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_avg"
+			],
+			ORDER: "courses_avg"
+		}
+	};
+	*/
+
+	query = {
+		WHERE: {
+			NOT: {
+				OR: [
+					{
+						LT: {
+							courses_year: 2016
+						}
+					},
+					{
+						GT: {
+							courses_pass: 2
+						}
+					}
+				]
+			}
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_avg"
+			],
+			ORDER: "courses_avg"
+		}
+	};
+	return ({query, path: "courses.zip", resultObject: resultObject3});
 }
 
 function getWildcardQuery(): Query {
