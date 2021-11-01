@@ -142,7 +142,7 @@ export default class InsightFacade implements IInsightFacade {
 		if (Object.keys(where).length !== 0) {
 			filteredData = filterData(this.addedIds.get(id), where);
 		} else {
-			filteredData = []; // stub
+			filteredData = this.addedIds.get(id); // stub
 		}
 
 		if (filteredData.length > 5000) {

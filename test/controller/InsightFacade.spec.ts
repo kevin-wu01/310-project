@@ -246,9 +246,11 @@ describe("InsightFacade", function(this: Suite) {
 				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
 
 				response = await facade.performQuery(query.query);
+				console.log(response, "response");
 				expect(response).to.have.length(query.resultObject.length);
 				expect(response).to.have.deep.members(query.resultObject);
 			} catch (e) {
+				console.log(e);
 				assert.fail("query failed to run");
 			}
 		});

@@ -47,25 +47,20 @@ function filterAND(data: any[], queryArray: any): any[] {
 
 function filterOR(data: any[], queryArray: any): any[] {
 	let queryResults: any[] = [];
-	let results: any[] = [];
+	let resultSet = new Set();
 
 	for (let query of queryArray) {
 		queryResults.push(filterData(data, query));
 	}
 
 	for (let datasetItem of queryResults) {
-		results = results.concat(datasetItem);
+		for (let item of datasetItem) {
+			resultSet.add(item);
+		}
 	}
+	let result = [...resultSet];
 
-	results = results.filter((item, index, self) => {
-		return index === self.findIndex((t) => {
-			return t.Title === item.Title && t.Subject === item.Subject && t.id === item.id && t.Avg === item.Avg &&
-			t.Professor === item.Professor && t.Pass === item.Pass && t.Fail === item.Fail && t.Audit === item.Audit &&
-			t.Section === item.Section && t.Year === item.Year;
-		});
-	});
-
-	return results;
+	return result;
 }
 
 function filterMComparator(data: any[], comparator: string, field: string, value: number): any[] {
@@ -124,16 +119,7 @@ function filterMComparator(data: any[], comparator: string, field: string, value
 				}
 
 				return dataClass[dataKey] === value;
-				/*
-				if (dataKey === "Year") {
-					if (dataYear === 1900) {
-						dataClass.Year = 1900;
-					}
-					return dataYear === value;
-				} else {
-					return dataClass[dataKey] === value;
-				}
-				*/
+
 			});
 			break;
 	}
@@ -156,8 +142,12 @@ function filterOptions(data: any[], query: any): any[] {
 	const dataColumns: string[] = query.COLUMNS;
 	const sortColumn: string = query.ORDER;
 	let filteredData: any[] = [];
-
+	// console.log(data, "data");
 	for (let section = 0; section < data.length; section++) {
+		if (typeof data[section] !== "object") {
+			continue;
+		}
+
 		filteredData.push({});
 
 		for (let key of dataColumns) {
@@ -175,7 +165,7 @@ function filterOptions(data: any[], query: any): any[] {
 	}
 
 	filteredData.sort((a,b) => {
-		return a[sortColumn] > b[sortColumn] ? 1 : -1;
+		return a[sortColumn] >= b[sortColumn] ? 1 : -1;
 	});
 
 	return filteredData;
@@ -227,13 +217,17 @@ function checkValidWildcardString(wildcardString: string) {
 		throw new InsightError();
 	}
 
+	if (wildcardString.length === 1) {
+		return new RegExp("^.*$");
+	}
+
 	if (indices.length === 1) {
 		switch (indices[0]) {
 			case 0:
 				pattern = new RegExp(`^.*${matchChar}$`);
 				break;
 			case wildcardString.length - 1:
-				pattern = new RegExp(`^${matchChar}.*$`);
+				pattern = new RegExp(`^${matchChar}+.*$`);
 				break;
 			default: throw new InsightError("wildcard must be in beginning or end of string");
 		}

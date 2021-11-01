@@ -25,36 +25,10 @@ const resultObject3 = [{courses_dept:"busi",courses_avg:4},{courses_dept:"chem",
 
 function getGTQuery(): Query {
 	let query: Record<string, any>;
-	/*
+
 	query = {
 		WHERE: {
-			AND: [
-				{
-					LT: {
-						courses_avg: 40
-					}
-				},
-				{
-					LT: {
-						courses_audit: 3
-					}
-				},
-				{
-					LT: {
-						courses_pass: 50
-					}
-				},
-				{
-					LT: {
-						courses_fail: 10
-					}
-				},
-				{
-					LT: {
-						courses_year: 2010
-					}
-				}
-			]
+
 		},
 		OPTIONS: {
 			COLUMNS: [
@@ -72,7 +46,7 @@ function getGTQuery(): Query {
 			ORDER: "courses_uuid"
 		}
 	};
-	*/
+
 	/*
 	query = {
 		WHERE: {
@@ -109,57 +83,33 @@ function getGTQuery(): Query {
 	};
 	*/
 	/*
-	query = {
-		WHERE: {
-			AND: [
-				{
-					LT: {
-						courses_year: 1901
-					}
-				},
-				{
-					GT: {
-						courses_pass: 2000
-					}
-				}
-			]
-		},
-		OPTIONS: {
-			COLUMNS: [
-				"courses_dept",
-				"courses_avg"
-			],
-			ORDER: "courses_avg"
-		}
-	};
-	*/
 
+	/*
 	query = {
-		WHERE: {
-			NOT: {
-				OR: [
-					{
-						LT: {
-							courses_year: 2016
-						}
-					},
-					{
-						GT: {
-							courses_pass: 2
-						}
-					}
-				]
-			}
-		},
-		OPTIONS: {
-			COLUMNS: [
-				"courses_dept",
-				"courses_avg"
-			],
-			ORDER: "courses_avg"
-		}
-	};
-	return ({query, path: "courses.zip", resultObject: resultObject3});
+            		WHERE: {
+            				OR: [
+            					{
+            						LT: {
+            							courses_fail: 0
+            						}
+            					},
+            					{
+            						GT: {
+            							courses_pass: 2000
+            						}
+            					}
+            				]
+            		},
+            		OPTIONS: {
+            			COLUMNS: [
+            				"courses_dept",
+            				"courses_avg"
+            			],
+            			ORDER: "courses_avg"
+            		}
+            	};
+            	*/
+	return ({query, path: "courses.zip", resultObject: resultObject1});
 }
 
 function getWildcardQuery(): Query {
@@ -167,15 +117,10 @@ function getWildcardQuery(): Query {
 
 	query = {
 		WHERE: {
-			AND: [
+			OR: [
 				{
 					IS: {
-						courses_dept: "*sc"
-					}
-				},
-				{
-					GT: {
-						courses_avg: 95
+						courses_dept: "*cpsc*"
 					}
 				}
 			]
@@ -183,7 +128,7 @@ function getWildcardQuery(): Query {
 		OPTIONS: {
 			COLUMNS: [
 				"courses_dept",
-				"courses_avg"
+				"courses_avg",
 			],
 			ORDER: "courses_avg"
 		}
