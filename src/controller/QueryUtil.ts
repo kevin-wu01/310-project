@@ -227,7 +227,7 @@ function checkValidWildcardString(wildcardString: string) {
 				pattern = new RegExp(`^.*${matchChar}$`);
 				break;
 			case wildcardString.length - 1:
-				pattern = new RegExp(`^${matchChar}+.*$`);
+				pattern = new RegExp(`^${matchChar}.*$`);
 				break;
 			default: throw new InsightError("wildcard must be in beginning or end of string");
 		}
