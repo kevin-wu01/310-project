@@ -113,6 +113,7 @@ export default class InsightFacade implements IInsightFacade {
 			throw new NotFoundError("id not added yet");
 		}
 
+		this.addedIds.delete(id);
 		fs.unlinkSync("data/" + id);
 		return id;
 
