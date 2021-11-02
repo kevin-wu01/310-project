@@ -88,7 +88,7 @@ export default class InsightFacade implements IInsightFacade {
 				arraySections.push(kind);
 				this.addedIds.set(id, arraySections);
 				fs.mkdirsSync("data");
-				fs.writeFileSync("data/insightDataset", JSON.stringify(Object.fromEntries(this.addedIds)));
+				fs.writeFileSync("data/" + id, JSON.stringify(this.addedIds.get(id)));
 				return Array.from(this.addedIds.keys());
 
 			});
@@ -113,13 +113,16 @@ export default class InsightFacade implements IInsightFacade {
 			throw new NotFoundError("id not added yet");
 		}
 
-		return fs.readFile("data/insightDataset", "string").then((contents) => {
-			this.addedIds.delete(id);
-			let obj: any = new Map(JSON.parse(contents));
-			obj.delete(id);
-			fs.writeFileSync("data/insightDataset", JSON.stringify(Object.fromEntries(obj)));
-			return id;
-		});
+		fs.unlinkSync("data/" + id);
+		return id;
+
+		// return fs.readFile("data/" + id, "string").then((contents) => {
+		// 	this.addedIds.delete(id);
+		// 	// let obj: any = new Map(JSON.parse(contents));
+		// 	// obj.delete(id);
+		// 	// fs.writeFileSync("data/insightDataset", JSON.stringify(Object.fromEntries(obj)));
+		// 	return id;
+		// });
 	}
 
 	public performQuery(query: any): Promise<any[]> {
