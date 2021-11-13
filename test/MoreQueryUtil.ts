@@ -83,7 +83,80 @@ function getGTQuery(): Query {
 	};
 	*/
 	/*
+	query = {
+		WHERE: {
+			AND: [
+				{
+					LT: {
+						courses_year: 1901
+					}
+				},
+				{
+					GT: {
+						courses_pass: 2000
+					}
+				}
+			]
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_avg"
+			],
+			ORDER: "courses_avg"
+		}
+	};
+	*/
+/*
+	query = {
+		WHERE: {
+			NOT: {
+				OR: [
+					{
+						LT: {
+							courses_year: 2016
+						}
+					},
+					{
+						GT: {
+							courses_pass: 2
+						}
+					}
+				]
+			}
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_avg"
+			],
+			ORDER: "courses_avg"
+		}
+	};
+*/
+	/*
+	query = {
+		WHERE: {
 
+			OR: [{
+				GT: {courses_avg: 99}
+			},
+			{
+				LT: {courses_avg: 98}
+			}
+			]
+
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_avg",
+				"courses_uuid"
+			],
+			ORDER: "courses_avg"
+		}
+	};
+	*/
 	/*
 	query = {
             		WHERE: {
@@ -117,10 +190,15 @@ function getWildcardQuery(): Query {
 
 	query = {
 		WHERE: {
-			OR: [
+			AND: [
 				{
 					IS: {
-						courses_dept: "*cpsc*"
+						courses_dept: "adh*"
+					}
+				},
+				{
+					GT: {
+						courses_pass: 2000
 					}
 				}
 			]
@@ -129,6 +207,7 @@ function getWildcardQuery(): Query {
 			COLUMNS: [
 				"courses_dept",
 				"courses_avg",
+				"courses_pass"
 			],
 			ORDER: "courses_avg"
 		}

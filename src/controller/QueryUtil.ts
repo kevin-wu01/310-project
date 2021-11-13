@@ -186,6 +186,7 @@ function filterSComparator(data: any[], field: string, value: string) {
 			return dataClass[dataKey] === value;
 		});
 	} else {
+	/*
 		let pattern = checkValidWildcardString(value);
 
 		filteredData = data.filter((dataClass) => {
@@ -196,9 +197,79 @@ function filterSComparator(data: any[], field: string, value: string) {
 
 			return pattern.test(dataClass[dataKey]);
 		});
+		*/
+		filteredData = filterWildcardString(data, dataKey, value);
 	}
 
 	return filteredData;
+}
+
+function filterWildcardString(data: any[], dataKey: string, wildcardString: string) {
+	let indices: number[] = [];
+	let splitString: string[] = wildcardString.split("*");
+	let dataYear: number;
+
+	for (let i = 0; i < wildcardString.length; i++) {
+		if (wildcardString[i] === "*") {
+			indices.push(i);
+		}
+	}
+
+	if (indices.length > 2) {
+		throw new InsightError();
+	}
+
+	if (wildcardString.length === 1) {
+		return data;
+	}
+
+	if (indices.length === 1) {
+		switch (indices[0]) {
+			case 0:
+				data = data.filter((dataClass) => {
+					dataYear = checkIsOverall(dataClass);
+					if (dataYear === 1900) {
+						dataClass.Year = 1900;
+					}
+					return dataClass[dataKey].endsWith(splitString[0]);
+				});
+				break;
+			case wildcardString.length - 1:
+				console.log(splitString[0]);
+				data = data.filter((dataClass) => {
+					if (typeof dataClass === undefined) {
+						return false;
+					}
+
+					dataYear = checkIsOverall(dataClass);
+					if (dataYear === 1900) {
+						dataClass.Year = 1900;
+					}
+					/*
+					console.log(dataClass[dataKey], "dataClass");
+					console.log(splitString[0], "endsWith");
+					console.log(dataClass[dataKey].startsWith(splitString[0]));
+					*/
+					return typeof dataClass === undefined || dataClass[dataKey].startsWith(splitString[0]);
+				});
+				break;
+			default: throw new InsightError("wildcard must be in beginning or end of string");
+		}
+	} else {
+		if (!(indices[0] === 0 && indices[1] === wildcardString.length - 1)) {
+			throw new InsightError("wildcard must be in beginning or end of string");
+		}
+
+		data = data.filter((dataClass) => {
+			dataYear = checkIsOverall(dataClass);
+			if (dataYear === 1900) {
+				dataClass.Year = 1900;
+			}
+			return dataClass[dataKey].includes(splitString[0]);
+		});
+	}
+
+	return data;
 }
 
 function checkValidWildcardString(wildcardString: string) {
