@@ -1,4 +1,5 @@
 import {InsightError} from "./IInsightFacade";
+import {wildcardStartFilter, wildcardEndFilter, wildcardIncludeFilter} from "./WildcardUtil";
 
 function filterData(data: any[], query: any): any[] {
 	const queryString: string = Object.keys(query)[0];
@@ -77,17 +78,6 @@ function filterMComparator(data: any[], comparator: string, field: string, value
 				}
 
 				return dataClass[dataKey] < value;
-				/*
-				if (dataKey === "Year") {
-					dataYear = checkIsOverall(dataClass);
-					if (dataYear === 1900) {
-						dataClass.Year = 1900;
-					}
-					return dataYear < value;
-				} else {
-					return dataClass[dataKey] < value;
-				}
-				*/
 			});
 			break;
 		case "GT":
@@ -98,17 +88,6 @@ function filterMComparator(data: any[], comparator: string, field: string, value
 				}
 
 				return dataClass[dataKey] > value;
-				/*
-				if (dataKey === "Year") {
-					dataYear = checkIsOverall(dataClass);
-					if (dataYear === 1900) {
-						dataClass.Year = 1900;
-					}
-					return dataYear > value;
-				} else {
-					return dataClass[dataKey] > value;
-				}
-				*/
 			});
 			break;
 		case "EQ":
@@ -129,9 +108,7 @@ function filterMComparator(data: any[], comparator: string, field: string, value
 
 
 function checkIsOverall(dataObject: any): number {
-	// console.log(dataObject, "dataObject");
 	if (dataObject.Section === "overall") {
-		// console.log("is overall!");
 		return 1900;
 	} else {
 		return dataObject["Year"];
@@ -142,7 +119,7 @@ function filterOptions(data: any[], query: any): any[] {
 	const dataColumns: string[] = query.COLUMNS;
 	const sortColumn: string = query.ORDER;
 	let filteredData: any[] = [];
-	// console.log(data, "data");
+
 	for (let section = 0; section < data.length; section++) {
 		if (typeof data[section] !== "object") {
 			continue;
@@ -186,18 +163,6 @@ function filterSComparator(data: any[], field: string, value: string) {
 			return dataClass[dataKey] === value;
 		});
 	} else {
-	/*
-		let pattern = checkValidWildcardString(value);
-
-		filteredData = data.filter((dataClass) => {
-			dataYear = checkIsOverall(dataClass);
-			if (dataYear === 1900) {
-				dataClass.Year = 1900;
-			}
-
-			return pattern.test(dataClass[dataKey]);
-		});
-		*/
 		filteredData = filterWildcardString(data, dataKey, value);
 	}
 
@@ -226,91 +191,18 @@ function filterWildcardString(data: any[], dataKey: string, wildcardString: stri
 	if (indices.length === 1) {
 		switch (indices[0]) {
 			case 0:
-				data = data.filter((dataClass) => {
-					dataYear = checkIsOverall(dataClass);
-					if (dataYear === 1900) {
-						dataClass.Year = 1900;
-					}
-					return dataClass[dataKey].endsWith(splitString[0]);
-				});
+				data = wildcardStartFilter(data, dataKey, splitString);
 				break;
 			case wildcardString.length - 1:
-				console.log(splitString[0]);
-				data = data.filter((dataClass) => {
-					if (typeof dataClass === undefined) {
-						return false;
-					}
-
-					dataYear = checkIsOverall(dataClass);
-					if (dataYear === 1900) {
-						dataClass.Year = 1900;
-					}
-					/*
-					console.log(dataClass[dataKey], "dataClass");
-					console.log(splitString[0], "endsWith");
-					console.log(dataClass[dataKey].startsWith(splitString[0]));
-					*/
-					return typeof dataClass === undefined || dataClass[dataKey].startsWith(splitString[0]);
-				});
+				data = wildcardEndFilter(data, dataKey, splitString);
 				break;
 			default: throw new InsightError("wildcard must be in beginning or end of string");
 		}
 	} else {
-		if (!(indices[0] === 0 && indices[1] === wildcardString.length - 1)) {
-			throw new InsightError("wildcard must be in beginning or end of string");
-		}
-
-		data = data.filter((dataClass) => {
-			dataYear = checkIsOverall(dataClass);
-			if (dataYear === 1900) {
-				dataClass.Year = 1900;
-			}
-			return dataClass[dataKey].includes(splitString[0]);
-		});
+		data = wildcardIncludeFilter(data, indices, dataKey, wildcardString);
 	}
 
 	return data;
-}
-
-function checkValidWildcardString(wildcardString: string) {
-	let indices: number[] = [];
-	let matchChar = wildcardString.replace("*", "");
-	matchChar = matchChar.replace("*", "");
-	let pattern;
-
-	for (let i = 0; i < wildcardString.length; i++) {
-		if (wildcardString[i] === "*") {
-			indices.push(i);
-		}
-	}
-
-	if (indices.length > 2) {
-		throw new InsightError();
-	}
-
-	if (wildcardString.length === 1) {
-		return new RegExp("^.*$");
-	}
-
-	if (indices.length === 1) {
-		switch (indices[0]) {
-			case 0:
-				pattern = new RegExp(`^.*${matchChar}$`);
-				break;
-			case wildcardString.length - 1:
-				pattern = new RegExp(`^${matchChar}.*$`);
-				break;
-			default: throw new InsightError("wildcard must be in beginning or end of string");
-		}
-	} else {
-		if (!(indices[0] === 0 && indices[1] === wildcardString.length - 1)) {
-			throw new InsightError("wildcard must be in beginning or end of string");
-		}
-
-		pattern = new RegExp(`^.*${matchChar}.*$`);
-	}
-
-	return pattern;
 }
 
 function getDataKey(key: string) {
@@ -353,4 +245,4 @@ function getDataKey(key: string) {
 	return dataKey;
 }
 
-export {filterData, filterOptions};
+export {filterData, filterOptions, checkIsOverall};
