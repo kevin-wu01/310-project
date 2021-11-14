@@ -15,11 +15,15 @@ const resultObject1 = [{courses_dept:"hist",courses_avg:34,courses_audit:0,cours
 	courses_id:"100"},{courses_dept:"frst",courses_avg:0,courses_audit:0,courses_pass:0,courses_fail:1,
 	courses_year:1900,courses_uuid:"89536",courses_instructor:"",courses_title:"forest ecology",
 	courses_id:"202"}];
-
+/*
 const resultObject2 = [{courses_dept:"apsc",courses_avg:95.05},{courses_dept:"musc",courses_avg:95.38},
 	{courses_dept:"musc",courses_avg:95.67},{courses_dept:"apsc",courses_avg:95.94},
 	{courses_dept:"apsc",courses_avg:95.95},{courses_dept:"apsc",courses_avg:96},
 	{courses_dept:"musc",courses_avg:96.5},{courses_dept:"musc",courses_avg:96.5}];
+*/
+
+const resultObject2 = [{courses_dept:"eosc",courses_avg:72.46,courses_pass:2016},
+	{courses_dept:"eosc",courses_avg:73.39,courses_pass:2015}];
 
 const resultObject3 = [{courses_dept:"busi",courses_avg:4},{courses_dept:"chem",courses_avg:53}];
 
@@ -83,7 +87,80 @@ function getGTQuery(): Query {
 	};
 	*/
 	/*
+	query = {
+		WHERE: {
+			AND: [
+				{
+					LT: {
+						courses_year: 1901
+					}
+				},
+				{
+					GT: {
+						courses_pass: 2000
+					}
+				}
+			]
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_avg"
+			],
+			ORDER: "courses_avg"
+		}
+	};
+	*/
+/*
+	query = {
+		WHERE: {
+			NOT: {
+				OR: [
+					{
+						LT: {
+							courses_year: 2016
+						}
+					},
+					{
+						GT: {
+							courses_pass: 2
+						}
+					}
+				]
+			}
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_avg"
+			],
+			ORDER: "courses_avg"
+		}
+	};
+*/
+	/*
+	query = {
+		WHERE: {
 
+			OR: [{
+				GT: {courses_avg: 99}
+			},
+			{
+				LT: {courses_avg: 98}
+			}
+			]
+
+		},
+		OPTIONS: {
+			COLUMNS: [
+				"courses_dept",
+				"courses_avg",
+				"courses_uuid"
+			],
+			ORDER: "courses_avg"
+		}
+	};
+	*/
 	/*
 	query = {
             		WHERE: {
@@ -117,10 +194,15 @@ function getWildcardQuery(): Query {
 
 	query = {
 		WHERE: {
-			OR: [
+			AND: [
 				{
 					IS: {
-						courses_dept: "*cpsc*"
+						courses_dept: "*sc*"
+					}
+				},
+				{
+					GT: {
+						courses_pass: 2000
 					}
 				}
 			]
@@ -129,6 +211,7 @@ function getWildcardQuery(): Query {
 			COLUMNS: [
 				"courses_dept",
 				"courses_avg",
+				"courses_pass"
 			],
 			ORDER: "courses_avg"
 		}
