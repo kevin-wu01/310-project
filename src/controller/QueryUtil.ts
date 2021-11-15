@@ -53,15 +53,30 @@ function filterOR(data: any[], queryArray: any): any[] {
 	for (let query of queryArray) {
 		queryResults.push(filterData(data, query));
 	}
+	/*
+	if (queryResults.length > 1) {
+		for (let idx = 1; idx < queryResults.length; idx++) {
+			for (let x = 0; x < queryResults[idx].length; x++) {
+				if (!queryResults[0].includes(queryResults[idx][x])) {
+					queryResults[0].push(queryResults[idx][x]);
+				}
+			}
+		}
+	}
+
+	return queryResults[0];
+*/
 
 	for (let datasetItem of queryResults) {
 		for (let item of datasetItem) {
 			resultSet.add(item);
 		}
 	}
+
 	let result = [...resultSet];
 
 	return result;
+
 }
 
 function filterMComparator(data: any[], comparator: string, field: string, value: number): any[] {
@@ -178,10 +193,6 @@ function filterWildcardString(data: any[], dataKey: string, wildcardString: stri
 		if (wildcardString[i] === "*") {
 			indices.push(i);
 		}
-	}
-
-	if (indices.length > 2) {
-		throw new InsightError();
 	}
 
 	if (wildcardString.length === 1) {

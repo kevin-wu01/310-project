@@ -42,10 +42,6 @@ function wildcardIncludeFilter(data: any[], indices: number[], dataKey: string, 
 	let splitString: string[] = wildcardString.split("*");
 	let dataYear: number;
 
-	if (!(indices[0] === 0 && indices[1] === wildcardString.length - 1)) {
-		throw new InsightError("wildcard must be in beginning or end of string");
-	}
-
 	data = data.filter((dataClass) => {
 		if (typeof dataClass[dataKey] !== "string") {
 			return false;

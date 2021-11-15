@@ -10,7 +10,7 @@ import {Context, Suite} from "mocha";
 import {getContentFromArchives, clearDisk, persistDir, Query, getQueries,
 	getQueryTooLarge, getInvalidQuery, getSimpleQuery, getBadPropertyQuery} from "../TestUtil";
 import {getNOTQuery, getBadIDQuery, getTwoDatasets} from "../QueryUtil";
-import {getGTQuery, getWildcardQuery} from "../MoreQueryUtil";
+import {getGTQuery, getWildcardQuery, getORQuery} from "../MoreQueryUtil";
 
 describe("InsightFacade", function(this: Suite) {
 	let courses: string;
@@ -18,7 +18,7 @@ describe("InsightFacade", function(this: Suite) {
 	before(function() {
 		courses = getContentFromArchives("courses.zip");
 	});
-
+	/*
 	describe("List Datasets", function() {
 		let facade: IInsightFacade = new InsightFacade();
 
@@ -225,7 +225,7 @@ describe("InsightFacade", function(this: Suite) {
 			}
 		});
 	});
-
+	*/
 	describe("Query Datasets", function() {
 		let facade: IInsightFacade = new InsightFacade();
 		let queries: Query[] = getQueries();
@@ -282,6 +282,21 @@ describe("InsightFacade", function(this: Suite) {
 					clearDisk();
 					facade = new InsightFacade();
 				}
+			}
+		});
+
+		it("query OR comparator", async function() {
+			try {
+				query = getORQuery();
+				courses = getContentFromArchives(query.path);
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+
+				response = await facade.performQuery(query.query);
+				expect(response).to.have.length(query.resultObject.length);
+				expect(response).to.have.deep.members(query.resultObject);
+			} catch (e) {
+				console.log(e);
+				assert.fail("query failed to run");
 			}
 		});
 

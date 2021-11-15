@@ -3,11 +3,16 @@ import {InsightError} from "./IInsightFacade";
 function checkValidQuery(query: any): string {
 	const where: Record<string, any> = query.WHERE;
 	const options: Record<string, any> = query.OPTIONS;
+	const transformations: Record<string, any> = query.TRANSFORMATIONS;
 
 	let id: string = checkValidOptions(options);
 
 	if (Object.keys(where).length !== 0) {
 		checkValidWhere(where, id);
+	}
+
+	if (Object.keys(transformations).length !== 0) {
+		checkValidTransformations(transformations, id);
 	}
 
 	return id;
@@ -17,7 +22,7 @@ function checkValidWhere(query: any, id: string) {
 	const queryString: string = Object.keys(query)[0];
 
 	if (Object.keys(query).length !== 1) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	switch(queryString) {
@@ -42,40 +47,40 @@ function checkValidWhere(query: any, id: string) {
 		case "NOT":
 			checkValidNOTComparator(query.NOT, id);
 			break;
-		default: throw new InsightError();
+		default: throw new InsightError("Invalid format");
 	}
 }
 
 function checkValidMComparator(query: any, id: string): void {
 	if (typeof query !== "object") {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (Object.keys(query)[0].split("_")[0] !== id) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (typeof query[Object.keys(query)[0]] !== "number") {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 }
 
 function checkValidLogicalComparator(query: any, id: string) {
 	if (!Array.isArray(query)) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (query.length === 0) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	query.forEach((q: any) => {
 		if (Object.keys(q).length === 0) {
-			throw new InsightError();
+			throw new InsightError("Invalid format");
 		}
 
 		checkValidWhere(q, id);
@@ -84,29 +89,51 @@ function checkValidLogicalComparator(query: any, id: string) {
 
 function checkValidSComparator(query: any, id: string) {
 	if (typeof query !== "object" || 11 > 12) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (Object.keys(query)[0].split("_")[0] !== id) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (typeof query[Object.keys(query)[0]] !== "string") {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
+	}
+
+	if (query[Object.keys(query)[0]].includes("*")) {
+		checkValidWildcardString(query[Object.keys(query)[0]]);
+	}
+}
+
+function checkValidWildcardString(wildcard: string) {
+	const wildcardArray: string[] = wildcard.split("*");
+
+	if (wildcardArray.length > 3) {
+		throw new InsightError("Invalid wildcard");
+	}
+
+	if (wildcardArray.length === 3) {
+		if (!(wildcard.startsWith("*") && wildcard.endsWith("*"))) {
+			throw new InsightError("Invalid wildcard");
+		}
+	} else {
+		if (!(wildcard.startsWith("*") || wildcard.endsWith("*"))) {
+			throw new InsightError("Invalid wildcard");
+		}
 	}
 }
 
 function checkValidNOTComparator(query: any, id: string) {
 	if (typeof query !== "object") {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (Object.keys(query).length > 1 || Object.keys(query).length === 0) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	checkValidWhere(query, id);
@@ -117,16 +144,16 @@ function checkValidOptions(options: any, id: string) {
 	let optionKeys: string[] = Object.keys(options);
 
 	if (optionKeys.length >= 3) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (optionKeys.length === 2) {
 		if (optionKeys.indexOf("COLUMNS") === -1 || optionKeys.indexOf("ORDER") === -1) {
-			throw new InsightError();
+			throw new InsightError("Invalid format");
 		}
 	} else {
 		if (optionKeys.indexOf("COLUMNS") === -1) {
-			throw new InsightError();
+			throw new InsightError("Invalid format");
 		}
 	}
 
@@ -134,7 +161,7 @@ function checkValidOptions(options: any, id: string) {
 
 	if (order) {
 		if (order.split("_")[0] !== id) {
-			throw new InsightError();
+			throw new InsightError("Invalid format");
 		}
 	}
 }
@@ -147,34 +174,34 @@ function checkValidOptions(options: any) {
 	let id: string;
 
 	if (!Array.isArray(options.COLUMNS) || typeof options.ORDER !== "string") {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 	if (optionKeys.length > 2) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	if (optionKeys.length === 2) {
 		if (optionKeys.indexOf("COLUMNS") === -1 || optionKeys.indexOf("ORDER") === -1) {
-			throw new InsightError();
+			throw new InsightError("Invalid format");
 		}
 	} else {
 		if (optionKeys.indexOf("COLUMNS") === -1) {
-			throw new InsightError();
+			throw new InsightError("Invalid format");
 		}
 	}
 	if (typeof columns[0] !== "string" || columns[0].split("_").length > 2) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	id = columns[0].split("_")[0];
 
 	if (id.length === 0) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
 	}
 
 	columns.forEach((c) => {
 		if (typeof c !== "string" || id !== c.split("_")[0]) {
-			throw new InsightError();
+			throw new InsightError("Invalid format");
 		}
 
 		checkValidKey(c.split("_")[1]);
@@ -182,7 +209,7 @@ function checkValidOptions(options: any) {
 
 	if (order) {
 		if (id !== order.split("_")[0] || !columns.includes(order)) {
-			throw new InsightError();
+			throw new InsightError("Invalid format");
 		}
 
 		checkValidKey(order.split("_")[1]);
@@ -191,12 +218,38 @@ function checkValidOptions(options: any) {
 	return id;
 }
 
+function checkValidTransformations(transformations: any, id: string) {
+	const group: string[] = transformations.GROUP;
+	const apply: any[] = transformations.APPLY;
+	let splitKey: string[];
+
+	if (group.length !== 0) {
+		for (let key of group) {
+			splitKey = key.split("_");
+			if (splitKey[0] !== id) {
+				throw new InsightError();
+			}
+
+			checkValidKey(splitKey[1]);
+		}
+	}
+}
+
 function checkValidKey(key: string): void {
 	const validKeys: string[] = ["avg", "pass", "fail", "audit", "year",
 		"dept", "id", "instructor", "title", "uuid"];
 
 	if (!validKeys.includes(key)) {
-		throw new InsightError();
+		throw new InsightError("Invalid format");
+	}
+}
+
+function checkValidRoomKey(key: string): void {
+	const validKeys: string[] = ["fullname", "shortname", "number", "name", "address", "lat", "lon", "seats", "type",
+		"furniture", "href"];
+
+	if (!validKeys.includes(key)) {
+		throw new InsightError("Invalid format");
 	}
 }
 
