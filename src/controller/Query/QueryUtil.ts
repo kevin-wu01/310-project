@@ -1,4 +1,4 @@
-import {InsightError} from "./IInsightFacade";
+import {InsightError} from "../IInsightFacade";
 import {wildcardStartFilter, wildcardEndFilter, wildcardIncludeFilter} from "./WildcardUtil";
 
 function filterData(data: any[], query: any): any[] {
@@ -132,7 +132,7 @@ function checkIsOverall(dataObject: any): number {
 
 function filterOptions(data: any[], query: any): any[] {
 	const dataColumns: string[] = query.COLUMNS;
-	const sortColumn: string = query.ORDER;
+	const order: any = query.ORDER;
 	let filteredData: any[] = [];
 
 	for (let section = 0; section < data.length; section++) {
@@ -143,7 +143,14 @@ function filterOptions(data: any[], query: any): any[] {
 		filteredData.push({});
 
 		for (let key of dataColumns) {
-			let dataKey: string = getDataKey(key.split("_")[1]);
+			// console.log(dataColumns);
+			let dataKey: string;
+			if (key.split("_").length === 2) {
+				dataKey = getDataKey(key.split("_")[1]);
+			} else {
+				dataKey = key;
+			}
+
 			switch (dataKey) {
 				case "id":
 					filteredData[section][key] = data[section][dataKey].toString();
@@ -156,9 +163,38 @@ function filterOptions(data: any[], query: any): any[] {
 		}
 	}
 
-	filteredData.sort((a,b) => {
-		return a[sortColumn] >= b[sortColumn] ? 1 : -1;
-	});
+	filteredData = sortOrder(filteredData, order);
+
+	return filteredData;
+}
+
+function sortOrder(filteredData: any[], order: any) {
+	if (typeof order === "string") {
+		filteredData.sort((a,b) => {
+			return a[order] >= b[order] ? 1 : -1;
+		});
+	} else {
+		const keys = order.keys;
+		const dir = order.dir;
+
+		filteredData.sort((a,b) => {
+			const diffKey = keys.find((k: string) => {
+				if (a[k] !== b[k]) {
+					return k;
+				}
+			});
+
+			if (typeof diffKey !== "undefined") {
+				if (dir === "UP") {
+					return a[diffKey] >= b[diffKey] ? 1 : -1;
+				} else {
+					return a[diffKey] <= b[diffKey] ? 1 : -1;
+				}
+			} else {
+				return 1;
+			}
+		});
+	}
 
 	return filteredData;
 }
@@ -250,10 +286,10 @@ function getDataKey(key: string) {
 		case "year":
 			dataKey = "Year";
 			break;
-		default: throw new InsightError();
+		default: return key;
 	}
 
 	return dataKey;
 }
 
-export {filterData, filterOptions, checkIsOverall};
+export {filterData, filterOptions, checkIsOverall, getDataKey};

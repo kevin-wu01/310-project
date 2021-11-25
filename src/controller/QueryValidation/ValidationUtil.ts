@@ -1,18 +1,44 @@
-import {InsightError} from "./IInsightFacade";
+import {InsightError} from "../IInsightFacade";
+import {checkValidTransformations} from "./ValidTransformUtil";
 
 function checkValidQuery(query: any): string {
 	const where: Record<string, any> = query.WHERE;
 	const options: Record<string, any> = query.OPTIONS;
 	const transformations: Record<string, any> = query.TRANSFORMATIONS;
+	let customKeys: string[] = [];
+	let id: string;
 
-	let id: string = checkValidOptions(options);
+	// let id: string = getQueryId(options.COLUMNS, transformations);
+
+	if (transformations) {
+		if (Object.keys(transformations).length !== 2) {
+			throw new InsightError("Transformation missing keys");
+		}
+
+		if (transformations.GROUP.length === 0) {
+			throw new InsightError("Group must be non-empty array");
+		}
+
+		id = getQueryId(transformations.GROUP);
+		customKeys = checkValidTransformations(transformations, id);
+	} else {
+		id = getQueryId(options.COLUMNS);
+	}
+
+	checkValidOptions(options, customKeys, id);
 
 	if (Object.keys(where).length !== 0) {
 		checkValidWhere(where, id);
 	}
 
-	if (Object.keys(transformations).length !== 0) {
-		checkValidTransformations(transformations, id);
+	return id;
+}
+
+function getQueryId(columns: string[]) {
+	let id: string = columns[0].split("_")[0];
+
+	if (id.length === 0) {
+		throw new InsightError("Invalid format");
 	}
 
 	return id;
@@ -139,47 +165,17 @@ function checkValidNOTComparator(query: any, id: string) {
 	checkValidWhere(query, id);
 }
 
-/*
-function checkValidOptions(options: any, id: string) {
-	let optionKeys: string[] = Object.keys(options);
-
-	if (optionKeys.length >= 3) {
-		throw new InsightError("Invalid format");
-	}
-
-	if (optionKeys.length === 2) {
-		if (optionKeys.indexOf("COLUMNS") === -1 || optionKeys.indexOf("ORDER") === -1) {
-			throw new InsightError("Invalid format");
-		}
-	} else {
-		if (optionKeys.indexOf("COLUMNS") === -1) {
-			throw new InsightError("Invalid format");
-		}
-	}
-
-	const order: string = options.order;
-
-	if (order) {
-		if (order.split("_")[0] !== id) {
-			throw new InsightError("Invalid format");
-		}
-	}
-}
-*/
-
-function checkValidOptions(options: any) {
+function checkValidOptions(options: any, customKeys: string[], id: string) {
 	let optionKeys: string[] = Object.keys(options);
 	let columns: any[] = options.COLUMNS;
 	let order: string = options.ORDER;
-	let id: string;
 
-	if (!Array.isArray(options.COLUMNS) || typeof options.ORDER !== "string") {
+	if (!Array.isArray(options.COLUMNS)) {
 		throw new InsightError("Invalid format");
 	}
 	if (optionKeys.length > 2) {
 		throw new InsightError("Invalid format");
 	}
-
 	if (optionKeys.length === 2) {
 		if (optionKeys.indexOf("COLUMNS") === -1 || optionKeys.indexOf("ORDER") === -1) {
 			throw new InsightError("Invalid format");
@@ -192,55 +188,77 @@ function checkValidOptions(options: any) {
 	if (typeof columns[0] !== "string" || columns[0].split("_").length > 2) {
 		throw new InsightError("Invalid format");
 	}
+	if (customKeys.length !== 0) {
+		columns.forEach((c) => {
+			if (!customKeys.includes(c)) {
+				throw new InsightError("column and transformation arrays different");
+			}
+		});
+	} else {
+		columns.forEach((c) => {
+			if (typeof c !== "string" || id !== c.split("_")[0]) {
+				throw new InsightError("Invalid format");
+			}
 
-	id = columns[0].split("_")[0];
-
-	if (id.length === 0) {
-		throw new InsightError("Invalid format");
+			checkValidKey(c, false);
+		});
 	}
-
-	columns.forEach((c) => {
-		if (typeof c !== "string" || id !== c.split("_")[0]) {
-			throw new InsightError("Invalid format");
-		}
-
-		checkValidKey(c.split("_")[1]);
-	});
-
 	if (order) {
-		if (id !== order.split("_")[0] || !columns.includes(order)) {
-			throw new InsightError("Invalid format");
-		}
-
-		checkValidKey(order.split("_")[1]);
+		checkValidOrder(order, columns, id);
 	}
-
 	return id;
 }
 
-function checkValidTransformations(transformations: any, id: string) {
-	const group: string[] = transformations.GROUP;
-	const apply: any[] = transformations.APPLY;
-	let splitKey: string[];
+function checkValidOrder(order: any, columns: string[], id: string) {
+	if (typeof order !== "string" && typeof order !== "object") {
+		throw new InsightError("Invalid order format");
+	}
 
-	if (group.length !== 0) {
-		for (let key of group) {
-			splitKey = key.split("_");
-			if (splitKey[0] !== id) {
-				throw new InsightError();
+	if (typeof order === "string") {
+		if (!columns.includes(order)) {
+			throw new InsightError("order key must be in columns");
+		}
+	} else {
+		const orderKeys: string[] = Object.keys(order);
+
+		if (orderKeys.length !== 2) {
+			throw new InsightError("two keys required in order");
+		}
+
+		if (!orderKeys.includes("dir") || !orderKeys.includes("keys")) {
+			throw new InsightError("invalid keys in order");
+		}
+
+		if (order.dir !== "DOWN" && order.dir !== "UP") {
+			throw new InsightError("invalid order direction");
+		}
+
+		if (!Array.isArray(order.keys)) {
+			throw new InsightError("order keys must be array");
+		}
+
+		for (let key of order.keys) {
+			if (!columns.includes(key)) {
+				throw new InsightError("invalid order key");
 			}
-
-			checkValidKey(splitKey[1]);
 		}
 	}
 }
 
-function checkValidKey(key: string): void {
+function checkValidKey(key: string, numOnly: boolean = false, customKeys: string[] = []): void {
 	const validKeys: string[] = ["avg", "pass", "fail", "audit", "year",
 		"dept", "id", "instructor", "title", "uuid"];
+	const numericKeys: string[] = ["avg", "pass", "fail", "audit", "year"];
+	const splitKey = key.split("_")[1];
 
-	if (!validKeys.includes(key)) {
-		throw new InsightError("Invalid format");
+	if (numOnly) {
+		if (!numericKeys.includes(splitKey)) {
+			throw new InsightError("Invalid key");
+		}
+	} else {
+		if (!validKeys.includes(splitKey) && !customKeys.includes(key)) {
+			throw new InsightError("Invalid key");
+		}
 	}
 }
 
@@ -253,4 +271,4 @@ function checkValidRoomKey(key: string): void {
 	}
 }
 
-export {checkValidQuery};
+export {checkValidQuery, checkValidKey};
