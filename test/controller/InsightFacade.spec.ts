@@ -10,7 +10,8 @@ import {Context, Suite} from "mocha";
 import {getContentFromArchives, clearDisk, persistDir, Query, getQueries,
 	getQueryTooLarge, getInvalidQuery, getSimpleQuery, getBadPropertyQuery} from "../TestUtil";
 import {getNOTQuery, getBadIDQuery, getTwoDatasets} from "../QueryUtil";
-import {getGTQuery, getWildcardQuery} from "../MoreQueryUtil";
+import {getGTQuery, getWildcardQuery, getORQuery} from "../MoreQueryUtil";
+import {getInvalidTransformation} from "../TransformQueryTestUtil";
 
 describe("InsightFacade", function(this: Suite) {
 	let courses: string;
@@ -239,6 +240,22 @@ describe("InsightFacade", function(this: Suite) {
 			courses = "";
 		});
 
+		it("query valid transform", async function() {
+			try {
+				query = getInvalidTransformation();
+				courses = getContentFromArchives(query.path);
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+
+				response = await facade.performQuery(query.query);
+				expect(response).to.have.length(query.resultObject.length);
+				expect(response).to.have.deep.members(query.resultObject);
+			} catch (e) {
+				console.log(e, "error");
+				// expect(e).to.be.instanceOf(InsightError);
+				assert.fail("query failed to run");
+			}
+		});
+
 		it("query wildcard IS", async function() {
 			try {
 				query = getWildcardQuery();
@@ -263,7 +280,8 @@ describe("InsightFacade", function(this: Suite) {
 				expect(response).to.have.length(query.resultObject.length);
 				expect(response).to.have.deep.members(query.resultObject);
 			} catch (e) {
-				assert.fail("query failed to run");
+				expect(e).to.be.instanceOf(ResultTooLargeError);
+				// assert.fail("query failed to run");
 			}
 		});
 
@@ -282,6 +300,21 @@ describe("InsightFacade", function(this: Suite) {
 					clearDisk();
 					facade = new InsightFacade();
 				}
+			}
+		});
+
+		it("query OR comparator", async function() {
+			try {
+				query = getORQuery();
+				courses = getContentFromArchives(query.path);
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+
+				response = await facade.performQuery(query.query);
+				expect(response).to.have.length(query.resultObject.length);
+				expect(response).to.have.deep.members(query.resultObject);
+			} catch (e) {
+				console.log(e);
+				assert.fail("query failed to run");
 			}
 		});
 

@@ -1,7 +1,8 @@
 import {IInsightFacade, InsightDataset, InsightDatasetKind,
 	InsightError, NotFoundError, ResultTooLargeError} from "./IInsightFacade";
-import {filterData, filterOptions } from "./QueryUtil";
-import {checkValidQuery} from "./ValidationUtil";
+import {filterData, filterOptions } from "./Query/QueryUtil";
+import {filterTransformation} from "./Query/TransformationUtil";
+import {checkValidQuery} from "./QueryValidation/ValidationUtil";
 import JSZip from "jszip";
 import * as fs from "fs-extra";
 
@@ -129,6 +130,7 @@ export default class InsightFacade implements IInsightFacade {
 	public performQuery(query: any): Promise<any[]> {
 		const where: Record<string, any> = query.WHERE;
 		const options: Record<string, any> = query.OPTIONS;
+		const transformations: Record<string, any> = query.TRANSFORMATIONS;
 		let filteredData: any[] = [];
 
 		if (!options) {
@@ -153,6 +155,10 @@ export default class InsightFacade implements IInsightFacade {
 			throw new ResultTooLargeError();
 		}
 
+		// filteredData = formatData(filteredData, id);
+		if (transformations) {
+			filteredData = filterTransformation(filteredData, transformations);
+		}
 		filteredData = filterOptions(filteredData, options);
 		// console.log(filteredData, "filteredData");
 		return Promise.resolve(filteredData);

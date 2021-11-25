@@ -22,10 +22,75 @@ const resultObject2 = [{courses_dept:"apsc",courses_avg:95.05},{courses_dept:"mu
 	{courses_dept:"musc",courses_avg:96.5},{courses_dept:"musc",courses_avg:96.5}];
 */
 
-const resultObject2 = [{courses_dept:"eosc",courses_avg:72.46,courses_pass:2016},
-	{courses_dept:"eosc",courses_avg:73.39,courses_pass:2015}];
+const resultObject2 = [{courses_dept:"eosc",courses_avg:72.46,courses_pass:2016,courses_id:"114"},
+	{courses_dept:"eosc",courses_avg:73.39,courses_pass:2015,courses_id:"114"}];
 
 const resultObject3 = [{courses_dept:"busi",courses_avg:4},{courses_dept:"chem",courses_avg:53}];
+
+const resultObject4 = [{courses_dept:"comm",courses_avg:74.05,courses_pass:697},
+	{courses_dept:"comm",courses_avg:74.84,courses_pass:637},
+	{courses_dept:"apsc",courses_avg:75.53,courses_pass:537},
+	{courses_dept:"comm",courses_avg:75.77,courses_pass:788},
+	{courses_dept:"apsc",courses_avg:79.43,courses_pass:522},
+	{courses_dept:"apsc",courses_avg:82.13,courses_pass:718}];
+
+const query1 = {
+	WHERE: {
+		AND: [
+			{
+				IS: {
+					courses_dept: "*"
+				}
+			},
+			{
+				GT: {
+					courses_pass: 500
+				}
+			},
+			{
+				LT: {
+					courses_fail: 1
+				}
+			},
+			{
+				OR: [
+					{
+						GT: {
+							courses_pass: 500
+						}
+					},
+					{
+						GT: {
+							courses_fail: 500
+						}
+					},
+					{
+						AND: [
+							{
+								GT: {
+									courses_pass: 1900
+								}
+							},
+							{
+								GT: {
+									courses_fail: 2000
+								}
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	OPTIONS: {
+		COLUMNS: [
+			"courses_dept",
+			"courses_avg",
+			"courses_pass"
+		],
+		ORDER: "courses_avg"
+	}
+};
 
 function getGTQuery(): Query {
 	let query: Record<string, any>;
@@ -197,7 +262,7 @@ function getWildcardQuery(): Query {
 			AND: [
 				{
 					IS: {
-						courses_dept: "*sc*"
+						courses_dept: "eos*"
 					}
 				},
 				{
@@ -211,7 +276,8 @@ function getWildcardQuery(): Query {
 			COLUMNS: [
 				"courses_dept",
 				"courses_avg",
-				"courses_pass"
+				"courses_pass",
+				"courses_id"
 			],
 			ORDER: "courses_avg"
 		}
@@ -220,4 +286,12 @@ function getWildcardQuery(): Query {
 	return ({query, path: "courses.zip", resultObject: resultObject2});
 }
 
-export {getGTQuery, getWildcardQuery};
+function getORQuery(): Query {
+	let query: Record<string, any>;
+
+	query = query1;
+
+	return ({query, path: "courses.zip", resultObject: resultObject4});
+}
+
+export {getGTQuery, getWildcardQuery, getORQuery};

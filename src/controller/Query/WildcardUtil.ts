@@ -1,4 +1,4 @@
-import {InsightError} from "./IInsightFacade";
+import {InsightError} from "../IInsightFacade";
 import {checkIsOverall} from "./QueryUtil";
 
 function wildcardStartFilter(data: any[], dataKey: string, splitString: string[]) {
@@ -13,6 +13,7 @@ function wildcardStartFilter(data: any[], dataKey: string, splitString: string[]
 		if (dataYear === 1900) {
 			dataClass.Year = 1900;
 		}
+
 		return dataClass[dataKey].endsWith(splitString[1]);
 	});
 
@@ -42,10 +43,6 @@ function wildcardIncludeFilter(data: any[], indices: number[], dataKey: string, 
 	let splitString: string[] = wildcardString.split("*");
 	let dataYear: number;
 
-	if (!(indices[0] === 0 && indices[1] === wildcardString.length - 1)) {
-		throw new InsightError("wildcard must be in beginning or end of string");
-	}
-
 	data = data.filter((dataClass) => {
 		if (typeof dataClass[dataKey] !== "string") {
 			return false;
@@ -54,6 +51,7 @@ function wildcardIncludeFilter(data: any[], indices: number[], dataKey: string, 
 		if (dataYear === 1900) {
 			dataClass.Year = 1900;
 		}
+
 		return dataClass[dataKey].includes(splitString[1]);
 	});
 
