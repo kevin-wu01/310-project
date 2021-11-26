@@ -1,11 +1,13 @@
 import express, {Application, Request, Response} from "express";
 import * as http from "http";
-// import cors from "cors";
+import cors from "cors";
+import InsightFacade from "../controller/InsightFacade";
 
 export default class Server {
 	private readonly port: number;
 	private express: Application;
 	private server: http.Server | undefined;
+	private facade: InsightFacade;
 
 	constructor(port: number) {
 		console.info(`Server::<init>( ${port} )`);
@@ -14,11 +16,12 @@ export default class Server {
 
 		this.registerMiddleware();
 		this.registerRoutes();
+		this.facade = new InsightFacade();
 
 		// NOTE: you can serve static frontend files in from your express server
 		// by uncommenting the line below. This makes files in ./frontend/public
 		// accessible at http://localhost:<port>/
-		// this.express.use(express.static("./frontend/public"))
+		this.express.use(express.static("./frontend/public"));
 	}
 
 	/**
@@ -75,17 +78,35 @@ export default class Server {
 		this.express.use(express.raw({type: "application/*", limit: "10mb"}));
 
 		// enable cors in request headers to allow cross-origin HTTP requests
-		// this.express.use(cors());
+		this.express.use(cors());
 	}
 
 	// Registers all request handlers to routes
 	private registerRoutes() {
 		// This is an example endpoint this you can invoke by accessing this URL in your browser:
 		// http://localhost:4321/echo/hello
-		this.express.get("/echo/:msg", Server.echo);
-
+		// this.express.get("/echo/:msg", Server.echo);
+		this.express.get("/echo/:msg", (req, res) => {
+			console.log(req);
+			res.send("foobar");
+		});
 		// TODO: your other endpoints should go here
+		this.express.post("/datasets", (req, res) => {
+			res.send("POST request to datasets");
+			console.log(req);
+		});
 
+		this.express.get("/datasets", (req, res) => {
+			res.send("GET request to datasets");
+		});
+
+		this.express.get("/datasets/:id", (req, res) => {
+			res.send("GET request for specific dataset");
+		});
+
+		this.express.post("/datasets/queries", (req, res) => {
+			res.send("POST request to query data");
+		});
 	}
 
 	// The next two methods handle the echo service.
