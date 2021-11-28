@@ -423,5 +423,6 @@ describe("InsightFacade", function(this: Suite) {
 				expect(e).to.be.instanceOf(InsightError);
 			}
 		});
+
 	});
 });

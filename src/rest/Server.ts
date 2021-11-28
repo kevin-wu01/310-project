@@ -1,11 +1,15 @@
 import express, {Application, Request, Response} from "express";
 import * as http from "http";
-// import cors from "cors";
+import cors from "cors";
+import InsightFacade from "../controller/InsightFacade";
+import {getContentFromArchives} from "../../test/TestUtil";
+import {InsightDatasetKind, InsightError, NotFoundError, ResultTooLargeError} from "../controller/IInsightFacade";
 
 export default class Server {
 	private readonly port: number;
 	private express: Application;
 	private server: http.Server | undefined;
+	private facade: InsightFacade;
 
 	constructor(port: number) {
 		console.info(`Server::<init>( ${port} )`);
@@ -14,11 +18,13 @@ export default class Server {
 
 		this.registerMiddleware();
 		this.registerRoutes();
-
+		this.facade = new InsightFacade();
+		this.addDefaultDatasets();
+		this.addUBCDatasets();
 		// NOTE: you can serve static frontend files in from your express server
 		// by uncommenting the line below. This makes files in ./frontend/public
 		// accessible at http://localhost:<port>/
-		// this.express.use(express.static("./frontend/public"))
+		this.express.use(express.static("./frontend/public"));
 	}
 
 	/**
@@ -75,17 +81,51 @@ export default class Server {
 		this.express.use(express.raw({type: "application/*", limit: "10mb"}));
 
 		// enable cors in request headers to allow cross-origin HTTP requests
-		// this.express.use(cors());
+		this.express.use(cors());
 	}
 
 	// Registers all request handlers to routes
 	private registerRoutes() {
-		// This is an example endpoint this you can invoke by accessing this URL in your browser:
-		// http://localhost:4321/echo/hello
-		this.express.get("/echo/:msg", Server.echo);
+		// this.express.get("/echo/:msg", Server.echo);
+		this.express.put("/datasets/:id/:kind", (req, res) => {
+			this.addDataset(req.body, req.params.id, req.params.kind).then((result) => {
+				res.status(200).json({result});
+			}).catch((e) => {
+				res.status(400).json({error: "an error occurred"});
+			});
+		});
 
-		// TODO: your other endpoints should go here
+		this.express.get("/datasets", (req, res) => {
+			this.getDatasets().then((result) => {
+				res.status(200).json({result});
+			}).catch((e) => {
+				res.status(400).json({error: "an error occurred"});
+			});
+		});
 
+		this.express.delete("/datasets/:id", (req, res) => {
+			this.deleteDataset(req.params.id).then((id) => {
+				res.status(200).json({result: id});
+			}).catch((e) => {
+				if (e instanceof NotFoundError) {
+					res.status(404).json({error: "id not added yet"});
+				} else {
+					res.status(400).json({error: "an error occurred"});
+				}
+			});
+		});
+
+		this.express.post("/query", (req, res) => {
+			this.queryData(req.body).then((result) => {
+				res.status(200).json({result});
+			}).catch((e) => {
+				if (e instanceof ResultTooLargeError) {
+					res.status(400).json({error: "result is greater than 4000"});
+				} else {
+					res.status(400).json({error: "an error occurred"});
+				}
+			});
+		});
 	}
 
 	// The next two methods handle the echo service.
@@ -107,5 +147,37 @@ export default class Server {
 		} else {
 			return "Message not provided";
 		}
+	}
+
+	private async addDefaultDatasets(): Promise<void> {
+		await this.facade.addDataset("sfu", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
+	}
+
+	private async addUBCDatasets(): Promise<void> {
+		await this.facade.addDataset("ubc", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
+	}
+
+	private async getDatasets(): Promise<any[]> {
+		let datasets = await this.facade.listDatasets();
+		return datasets;
+	}
+
+	private async queryData(query: any): Promise<any[]> {
+		let data = await this.facade.performQuery(query);
+		return data;
+	}
+
+	private async deleteDataset(id: any): Promise<string> {
+		await this.facade.removeDataset(id);
+
+		return id;
+	}
+
+	private async addDataset(data: any, id: string, kind: string): Promise<string[]> {
+		let datasetKind = kind === "courses" ? InsightDatasetKind.Courses : InsightDatasetKind.Rooms;
+
+		let addedIds = await this.facade.addDataset(id, Buffer.from(data).toString("base64"), datasetKind);
+
+		return addedIds;
 	}
 }

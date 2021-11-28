@@ -142,7 +142,7 @@ export default class InsightFacade implements IInsightFacade {
 		let data: any[] = this.addedIds.get(id);
 
 		if (typeof data === "undefined") {
-			throw new InsightError();
+			throw new InsightError("id not defined");
 		}
 
 		if (Object.keys(where).length !== 0) {
