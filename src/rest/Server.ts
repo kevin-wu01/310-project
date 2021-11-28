@@ -91,6 +91,7 @@ export default class Server {
 			this.addDataset(req.body, req.params.id, req.params.kind).then((result) => {
 				res.status(200).json({result});
 			}).catch((e) => {
+				console.log(e, "err");
 				res.status(400).json({error: "an error occurred"});
 			});
 		});

@@ -57,5 +57,28 @@ describe("Facade D3", function () {
 		}
 	});
 
+	it("GET datasets", function () {
+		const SERVER_URL = "http://localhost:4321";
+		const ENDPOINT_URL = "/datasets";
+
+		try {
+			return chai.request(SERVER_URL)
+				.get(ENDPOINT_URL)
+				.then(function (res) {
+					// some logging here please!
+					expect(res.status).to.be.equal(200);
+				})
+				.catch(function (err) {
+					// some logging here please!
+					console.log(err, "err1");
+					expect.fail();
+				});
+		} catch (err) {
+			console.log(err, "err2");
+			// and some more logging here!
+		}
+	});
+
+
 	// The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });
