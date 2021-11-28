@@ -2,6 +2,8 @@ import express, {Application, Request, Response} from "express";
 import * as http from "http";
 import cors from "cors";
 import InsightFacade from "../controller/InsightFacade";
+import {getContentFromArchives} from "../../test/TestUtil";
+import {InsightDatasetKind, InsightError, NotFoundError, ResultTooLargeError} from "../controller/IInsightFacade";
 
 export default class Server {
 	private readonly port: number;
@@ -17,7 +19,8 @@ export default class Server {
 		this.registerMiddleware();
 		this.registerRoutes();
 		this.facade = new InsightFacade();
-
+		this.addDefaultDatasets();
+		this.addUBCDatasets();
 		// NOTE: you can serve static frontend files in from your express server
 		// by uncommenting the line below. This makes files in ./frontend/public
 		// accessible at http://localhost:<port>/
@@ -83,29 +86,45 @@ export default class Server {
 
 	// Registers all request handlers to routes
 	private registerRoutes() {
-		// This is an example endpoint this you can invoke by accessing this URL in your browser:
-		// http://localhost:4321/echo/hello
 		// this.express.get("/echo/:msg", Server.echo);
-		this.express.get("/echo/:msg", (req, res) => {
-			console.log(req);
-			res.send("foobar");
-		});
-		// TODO: your other endpoints should go here
 		this.express.post("/datasets", (req, res) => {
-			res.send("POST request to datasets");
-			console.log(req);
+			try {
+				res.send("POST request to datasets");
+			} catch(e) {
+				res.status(400).json({error: "an error occurred"});
+			}
 		});
 
 		this.express.get("/datasets", (req, res) => {
-			res.send("GET request to datasets");
+			this.getDatasets().then((result) => {
+				res.status(200).send(result);
+			}).catch((e) => {
+				res.status(400).json({error: "an error occurred"});
+			});
 		});
 
-		this.express.get("/datasets/:id", (req, res) => {
-			res.send("GET request for specific dataset");
+		this.express.delete("/datasets/:id", (req, res) => {
+			this.deleteDataset(req.params.id).then((id) => {
+				res.status(200).json({id});
+			}).catch((e) => {
+				if (e instanceof NotFoundError) {
+					res.status(400).json({error: "id not added yet"});
+				} else {
+					res.status(400).json({error: "an error occurred"});
+				}
+			});
 		});
 
 		this.express.post("/datasets/queries", (req, res) => {
-			res.send("POST request to query data");
+			this.queryData(req.body).then((result) => {
+				res.status(200).send(result);
+			}).catch((e) => {
+				if (e instanceof ResultTooLargeError) {
+					res.status(400).json({error: "result is greater than 4000"});
+				} else {
+					res.status(400).json({error: "an error occurred"});
+				}
+			});
 		});
 	}
 
@@ -128,5 +147,29 @@ export default class Server {
 		} else {
 			return "Message not provided";
 		}
+	}
+
+	private async addDefaultDatasets(): Promise<void> {
+		await this.facade.addDataset("courses", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
+	}
+
+	private async addUBCDatasets(): Promise<void> {
+		await this.facade.addDataset("ubc", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
+	}
+
+	private async getDatasets(): Promise<any[]> {
+		let datasets = await this.facade.listDatasets();
+		return datasets;
+	}
+
+	private async queryData(query: any): Promise<any[]> {
+		let data = await this.facade.performQuery(query);
+		return data;
+	}
+
+	private async deleteDataset(id: any): Promise<string> {
+		await this.facade.removeDataset(id);
+
+		return id;
 	}
 }
