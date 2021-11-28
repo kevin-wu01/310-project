@@ -87,17 +87,17 @@ export default class Server {
 	// Registers all request handlers to routes
 	private registerRoutes() {
 		// this.express.get("/echo/:msg", Server.echo);
-		this.express.post("/datasets", (req, res) => {
-			try {
-				res.send("POST request to datasets");
-			} catch(e) {
+		this.express.put("/datasets/:id/:kind", (req, res) => {
+			this.addDataset(req.body, req.params.id, req.params.kind).then((result) => {
+				res.status(200).json({result});
+			}).catch((e) => {
 				res.status(400).json({error: "an error occurred"});
-			}
+			});
 		});
 
 		this.express.get("/datasets", (req, res) => {
 			this.getDatasets().then((result) => {
-				res.status(200).send(result);
+				res.status(200).json({result});
 			}).catch((e) => {
 				res.status(400).json({error: "an error occurred"});
 			});
@@ -105,19 +105,19 @@ export default class Server {
 
 		this.express.delete("/datasets/:id", (req, res) => {
 			this.deleteDataset(req.params.id).then((id) => {
-				res.status(200).json({id});
+				res.status(200).json({result: id});
 			}).catch((e) => {
 				if (e instanceof NotFoundError) {
-					res.status(400).json({error: "id not added yet"});
+					res.status(404).json({error: "id not added yet"});
 				} else {
 					res.status(400).json({error: "an error occurred"});
 				}
 			});
 		});
 
-		this.express.post("/datasets/queries", (req, res) => {
+		this.express.post("/query", (req, res) => {
 			this.queryData(req.body).then((result) => {
-				res.status(200).send(result);
+				res.status(200).json({result});
 			}).catch((e) => {
 				if (e instanceof ResultTooLargeError) {
 					res.status(400).json({error: "result is greater than 4000"});
@@ -150,7 +150,7 @@ export default class Server {
 	}
 
 	private async addDefaultDatasets(): Promise<void> {
-		await this.facade.addDataset("courses", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
+		await this.facade.addDataset("sfu", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
 	}
 
 	private async addUBCDatasets(): Promise<void> {
@@ -171,5 +171,13 @@ export default class Server {
 		await this.facade.removeDataset(id);
 
 		return id;
+	}
+
+	private async addDataset(data: any, id: string, kind: string): Promise<string[]> {
+		let datasetKind = kind === "courses" ? InsightDatasetKind.Courses : InsightDatasetKind.Rooms;
+
+		let addedIds = await this.facade.addDataset(id, Buffer.from(data).toString("base64"), datasetKind);
+
+		return addedIds;
 	}
 }

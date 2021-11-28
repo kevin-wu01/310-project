@@ -15,7 +15,7 @@ function handleClickMe() {
 }
 
 function handleBoost() {
-	fetch("http://localhost:4321/datasets/queries", {
+	fetch("http://localhost:4321/query", {
 		method: 'post',
 		headers: {
 			'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ function handleBoost() {
 	}).then(response => response.json())
 		.then((data) => {
 			try {
-				generateTable(data);
+				generateTable(data.result);
 			} catch (e) {
 				alert("Oops! Something went wrong.");
 			}
@@ -56,12 +56,13 @@ function handleListDatasets() {
 	}).then(response => response.json())
 		.then((data) => {
 			let filteredData = [];
+			data = data.result;
 			data.forEach((d) => {
 				let val = d.id;
 				if (d.kind === "courses") {
 					filteredData.push({id: val});
 				}
-			})
+			});
 
 			try {
 				generateTable(filteredData);
