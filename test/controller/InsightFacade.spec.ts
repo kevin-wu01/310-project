@@ -19,7 +19,7 @@ describe("InsightFacade", function(this: Suite) {
 	before(function() {
 		courses = getContentFromArchives("courses.zip");
 	});
-	/*
+
 	describe("List Datasets", function() {
 		let facade: IInsightFacade = new InsightFacade();
 
@@ -425,5 +425,5 @@ describe("InsightFacade", function(this: Suite) {
 		});
 
 	});
-	*/
+
 });
