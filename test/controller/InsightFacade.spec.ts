@@ -425,4 +425,5 @@ describe("InsightFacade", function(this: Suite) {
 		});
 
 	});
+
 });

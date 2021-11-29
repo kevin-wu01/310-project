@@ -19,8 +19,8 @@ export default class Server {
 		this.registerMiddleware();
 		this.registerRoutes();
 		this.facade = new InsightFacade();
-		this.addDefaultDatasets();
-		this.addUBCDatasets();
+		// this.addDefaultDatasets();
+		// this.addUBCDatasets();
 		// NOTE: you can serve static frontend files in from your express server
 		// by uncommenting the line below. This makes files in ./frontend/public
 		// accessible at http://localhost:<port>/
@@ -91,6 +91,7 @@ export default class Server {
 			this.addDataset(req.body, req.params.id, req.params.kind).then((result) => {
 				res.status(200).json({result});
 			}).catch((e) => {
+				console.log(e, "err");
 				res.status(400).json({error: "an error occurred"});
 			});
 		});
