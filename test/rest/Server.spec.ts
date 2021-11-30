@@ -10,7 +10,7 @@ const query = {
 		AND: [
 			{
 				IS: {
-					courses_dept: "*cps*"
+					courses_dept: "*c*"
 				}
 			},
 			{
@@ -22,31 +22,43 @@ const query = {
 	},
 	OPTIONS: {
 		COLUMNS: [
-			"courses_avg",
 			"courses_dept",
+			"courses_avg",
+			"courses_pass",
+			"countInstruct",
 			"maxAvg"
 		],
 		ORDER: {
-			dir: "DOWN",
+			dir: "UP",
 			keys: [
-				"maxAvg"
+				"maxAvg",
+				"courses_dept",
+				"courses_pass"
 			]
 		}
 	},
 	TRANSFORMATIONS: {
 		GROUP: [
 			"courses_dept",
-			"courses_avg"
+			"courses_avg",
+			"courses_pass"
 		],
 		APPLY: [
 			{
 				maxAvg: {
 					MAX: "courses_avg"
 				}
+			},
+			{
+				countInstruct: {
+					COUNT: "courses_instructor"
+				}
 			}
 		]
 	}
 };
+
+const resultData = {result: []};
 
 describe("Facade D3", function () {
 
@@ -183,12 +195,22 @@ describe("Facade D3", function () {
 				.set("Content-Type", "application/json")
 				.then(function (res) {
 					// some logging here please!
-					console.log(res.body, "res");
+					// console.log(res.body, "res");
 					expect(res.status).to.be.equal(200);
+					expect(res.body).to.eql(resultData);
+
+					for (let idx = 0; idx < res.body.result.length; idx++){
+						console.log(res.body.result[idx], "res");
+						console.log(resultData.result[idx], "expected");
+						expect(res.body.result[idx]).to.eql(resultData.result[idx]);
+					}
+					console.log(res.body.result.length, "res length");
+					// expect(res.body.result).to.have.members(resultData.result);
+					// expect(res.body.result).to.have.ordered.members(resultData.result);
 				})
 				.catch(function (err) {
 					// some logging here please!
-					console.log(err, "err1");
+					// console.log(err, "err1");
 					expect.fail();
 				});
 		} catch (err) {

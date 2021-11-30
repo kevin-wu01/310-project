@@ -1,5 +1,5 @@
 .button {
-	background-color: #3f51b5;
+	background-color: #3FC1C9;
 	border: none;
 	color: white;
 	padding: 15px 32px;
@@ -11,4 +11,26 @@
 
 .button:hover {
 	cursor: pointer;
+}
+
+.h1 {
+	font-family: 'Rowdies', cursive;
+	color: #364F6B;
+}
+
+.body {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	height: 100vh;
+	justify-content: center;
+	background-color: #F5F5F5;
+}
+
+#boost-button {
+	margin-bottom: 12px;
+}
+
+#data-table {
+	width: 100%;
 }
