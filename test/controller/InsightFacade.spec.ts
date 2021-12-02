@@ -16,9 +16,31 @@ import {getWeirdQuery} from "../QueryUtil2";
 
 describe("InsightFacade", function(this: Suite) {
 	let courses: string;
+	let rooms: string;
 
 	before(function() {
 		courses = getContentFromArchives("courses.zip");
+		rooms = getContentFromArchives("rooms.zip");
+	});
+
+	describe("Add Rooms", function() {
+		let facade: IInsightFacade = new InsightFacade();
+
+		beforeEach(function() {
+			clearDisk();
+			facade = new InsightFacade();
+		});
+
+		it("should list no datasets", function (this: Context) {
+
+			return facade.listDatasets().then((insightDatasets) => {
+				expect(insightDatasets).to.deep.equal([]);
+
+				expect(insightDatasets).to.be.an.instanceof(Array);
+				expect(insightDatasets).to.have.length(0);
+			});
+		});
+
 	});
 	/*
 	describe("List Datasets", function() {
