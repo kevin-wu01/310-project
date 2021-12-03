@@ -5,6 +5,10 @@ import {filterTransformation} from "./Query/TransformationUtil";
 import {checkValidQuery} from "./QueryValidation/ValidationUtil";
 import JSZip from "jszip";
 import * as fs from "fs-extra";
+import {Document, parse} from "parse5";
+import { transferPromiseness } from "chai-as-promised";
+import { Console } from "console";
+import { read } from "fs";
 
 function checkFields(sectionData: any) {
 	if (("Subject" in sectionData) && ("id" in sectionData) &&
@@ -21,10 +25,6 @@ function checkFields(sectionData: any) {
 	return false;
 }
 
-function roomsDataParse(content: string) {
-	let zip = new JSZip();
-
-}
 
 /**
  * This is the main programmatic entry point for the project.
@@ -34,6 +34,8 @@ function roomsDataParse(content: string) {
 export default class InsightFacade implements IInsightFacade {
 
 	private addedIds = new Map();
+	private tableNode: any;
+	private arrayRooms: any = [];
 
 	private set data(value: any[]) {
 		this._data = value;
@@ -49,13 +51,13 @@ export default class InsightFacade implements IInsightFacade {
 		this.num = 0;
 	}
 
-	private courseDataParse(id: string, content: string, kind: InsightDatasetKind) {
+	private async courseDataParse(id: string, content: string, kind: InsightDatasetKind) {
 		let zip = new JSZip();
 		return zip.loadAsync(content, {base64: true}).then((contents) => {
 			let promArray: Array<Promise<string>> = [];
 			contents.forEach(function (relativePath, file) {
 				promArray.push(file.async("string"));
-				console.log(relativePath);
+				// console.log(relativePath);
 			});
 
 			let arraySections: any = [];
@@ -88,6 +90,63 @@ export default class InsightFacade implements IInsightFacade {
 		});
 	}
 
+	private recursiveParseTable(document: any) {
+		// console.log(document.childNodes.length, document.nodeName);
+		if (document.nodeName === "table") {
+			this.tableNode = document;
+		}
+		if ("childNodes" in document) {
+			for (let each of document.childNodes) {
+				this.recursiveParseTable(each);
+			}
+		}
+	}
+
+	private builHtmlProcess(builHtml: any) {
+		let builParsed = parse(builHtml);
+		this.tableNode = undefined;
+		this.recursiveParseTable(builParsed);
+		if (typeof this.tableNode !== "undefined") {
+			console.log(builHtml.substring(0, 8));
+			this.arrayRooms.push({a:2, b:2});
+			// console.log
+		}
+	}
+
+	private roomDataParse(id: string, content: string, kind: InsightDatasetKind) {
+		let zip = new JSZip();
+		this.arrayRooms = [];
+		return zip.loadAsync(content, {base64: true}).then((contents) => {
+			contents.files["rooms/index.htm"].async("string").then((html) => {
+				let document = parse(html);
+				this.recursiveParseTable(document);
+				this.tableNode = this.tableNode.childNodes[3];
+				for (let each of this.tableNode.childNodes) {
+					if (each.nodeName === "tr") {
+						// console.log(each.childNodes[3]);
+						try {
+							let strLatter = each.childNodes[3].childNodes[0].value.trim();
+							let readString = "rooms/campus/discover/buildings-and-classrooms/" + strLatter;
+							// contents.files["rooms/campus/discover/buildings-and-classrooms/" + each.childNodes[3].childNodes[0].trim()]
+							// contents.files[readString].async("string").then((builHtml) => {
+							// 	this.builHtmlProcess(builHtml);
+							// });
+						} catch (e) {
+							console.log(e);
+						}
+					}
+				}
+				this.arrayRooms.push(kind);
+				console.log(this.arrayRooms);
+				this.addedIds.set(id, this.arrayRooms);
+			});
+
+		}).catch((error) => {
+			throw new InsightError("problem reading or writing");
+		});
+	}
+
+
 	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		if (id.includes("_")) {
 			throw new InsightError("id has underscore");
@@ -103,11 +162,13 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		if (kind === "rooms") {
-			return [];
+			this.roomDataParse(id, content, kind);
+			// console.log(this.addedIds);
 		} else {
 			this.courseDataParse(id, content, kind);
-			return Array.from(this.addedIds.keys());
 		}
+
+		return Array.from(this.addedIds.keys());
 	}
 
 	public async removeDataset(id: string): Promise<string> {
