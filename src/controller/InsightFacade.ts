@@ -150,15 +150,19 @@ export default class InsightFacade implements IInsightFacade {
 		} else {
 			filteredData = this.addedIds.get(id); // stub
 		}
+		// console.log(filteredData.length, "length");
+
+		// filteredData = formatData(filteredData, id);
+		// console.log(transformations, "transformations");
+		if (transformations) {
+			console.log("transform data");
+			filteredData = filterTransformation(filteredData, transformations);
+		}
 
 		if (filteredData.length > 5000) {
 			throw new ResultTooLargeError();
 		}
-
-		// filteredData = formatData(filteredData, id);
-		if (transformations) {
-			filteredData = filterTransformation(filteredData, transformations);
-		}
+		console.log(filteredData.length, "length");
 		filteredData = filterOptions(filteredData, options);
 		// console.log(filteredData, "filteredData");
 		return Promise.resolve(filteredData);

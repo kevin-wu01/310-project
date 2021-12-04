@@ -163,7 +163,9 @@ function filterOptions(data: any[], query: any): any[] {
 		}
 	}
 
-	filteredData = sortOrder(filteredData, order);
+	if (order) {
+		filteredData = sortOrder(filteredData, order);
+	}
 
 	return filteredData;
 }

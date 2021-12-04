@@ -20,15 +20,15 @@ function checkValidQuery(query: any): string {
 		}
 
 		id = getQueryId(transformations.GROUP);
-		// customKeys = checkValidTransformations(transformations, id);
+		customKeys = checkValidTransformations(transformations, id);
 	} else {
 		id = getQueryId(options.COLUMNS);
 	}
 
-	// checkValidOptions(options, customKeys, id);
+	checkValidOptions(options, customKeys, id);
 
 	if (Object.keys(where).length !== 0) {
-		// checkValidWhere(where, id);
+		checkValidWhere(where, id);
 	}
 
 	return id;
