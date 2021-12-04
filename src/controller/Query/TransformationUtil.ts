@@ -21,6 +21,12 @@ function filterTransformation(data: any[], transformations: any): any[] {
 		return prevVal;
 	}, []);
 
+	if (typeof transformedData[transformedData.length - 1][0] !== "object") {
+		transformedData.pop();
+	}
+	// console.log(typeof transformedData[transformedData.length - 1][0] !== "object", "type");
+	// console.log(transformedData[transformedData.length - 1]);
+
 	for (let d of transformedData) {
 		apply.forEach((a: any) => {
 			let applyName = Object.keys(a)[0];
