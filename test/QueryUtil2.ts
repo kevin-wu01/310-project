@@ -22,7 +22,7 @@ const query1 = {
 	}
 };
 
-const resultObject1 = [{courses_dept:"edcp",maxAvg:95.58},{courses_dept:"cpsc",maxAvg:95}];
+const resultObject1 = [{}];
 
 function getWeirdQuery(): Query {
 	let query: Record<string, any>;

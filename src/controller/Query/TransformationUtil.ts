@@ -5,9 +5,32 @@ function filterTransformation(data: any[], transformations: any): any[] {
 	const group = transformations.GROUP;
 	const apply = transformations.APPLY;
 	let transformedData: any[];
+	let transformedObject: any;
 	let appliedData: any[] = [];
 
-	transformedData = data.reduce((prevVal, val) => {
+	transformedObject = data.reduce((prevVal, val) => {
+		let keyString = "";
+		group.forEach((g: any) => {
+			let k = getDataKey(g.split("_")[1]);
+			let v = val[k];
+
+			if(!v) {
+				return;
+			}
+
+			if (typeof v !== "string") {
+				v = v.toString();
+			}
+
+			keyString = keyString + v;
+		});
+
+		if (!prevVal[keyString]) {
+			prevVal[keyString] = [];
+		}
+
+		prevVal[keyString].push(val);
+		/*
 		const isIdentical = prevVal.findIndex((pv: any) => {
 			return isExistingValue(group, pv, val);
 		});
@@ -17,16 +40,39 @@ function filterTransformation(data: any[], transformations: any): any[] {
 		} else {
 			prevVal[isIdentical].push(val);
 		}
-
+		*/
 		return prevVal;
-	}, []);
+	}, {});
 
-	if (typeof transformedData[transformedData.length - 1][0] !== "object") {
-		transformedData.pop();
-	}
 	// console.log(typeof transformedData[transformedData.length - 1][0] !== "object", "type");
 	// console.log(transformedData[transformedData.length - 1]);
+	let dataKeys = Object.keys(transformedObject);
+	/*
+	dataKeys.forEach((k) => {
+		apply.forEach((a: any) => {
+			let dataVal = transformedObject[k];
+			let applyName = Object.keys(a)[0];
+			let applyObject = a[applyName];
+			let applyVal = getApplyVal(applyObject, transformedObject[k]);
+		});
+	});
+	*/
+	// console.log(transformedObject[Object.keys(transformedObject)[Object.keys(transformedObject).length - 1]], "last property");
 
+	for (let d in transformedObject) {
+		apply.forEach((a: any, idx: number) => {
+			let applyName = Object.keys(a)[0];
+			let applyObject = a[applyName];
+			// console.log(transformedObject[d][0], "transformedObject");
+			let applyVal = getApplyVal(applyObject, transformedObject[d]);
+
+			transformedObject[d][0][applyName] = applyVal;
+		});
+
+		appliedData.push(transformedObject[d][0]);
+	}
+	// console.log(appliedData[appliedData.length - 1], "appliedData");
+	/*
 	for (let d of transformedData) {
 		apply.forEach((a: any) => {
 			let applyName = Object.keys(a)[0];
@@ -38,7 +84,7 @@ function filterTransformation(data: any[], transformations: any): any[] {
 
 		appliedData.push(d[0]);
 	}
-
+	*/
 	return appliedData;
 }
 
@@ -54,6 +100,10 @@ function getApplyVal(applyObject: any, data: any[]) {
 		let value = d[key];
 		let addNum: Decimal;
 
+		if (typeof d !== "object") {
+			console.log("invalid object");
+			return;
+		}
 		switch(type) {
 			case "MAX":
 				typeVal = idx === 0 ? value : typeVal > value ? typeVal : value;
