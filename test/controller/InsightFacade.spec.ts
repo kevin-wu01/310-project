@@ -12,7 +12,7 @@ import {getContentFromArchives, clearDisk, persistDir, Query, getQueries,
 import {getNOTQuery, getBadIDQuery, getTwoDatasets} from "../QueryUtil";
 import {getGTQuery, getWildcardQuery, getORQuery} from "../MoreQueryUtil";
 import {getInvalidTransformation} from "../TransformQueryTestUtil";
-import {getWeirdQuery} from "../QueryUtil2";
+import {getWeirdQuery, getOrderQuery} from "../QueryUtil2";
 
 describe("InsightFacade", function(this: Suite) {
 	let courses: string;
@@ -44,7 +44,7 @@ describe("InsightFacade", function(this: Suite) {
 
 
 	});
-	/*
+
 	describe("List Datasets", function() {
 		let facade: IInsightFacade = new InsightFacade();
 
@@ -251,7 +251,7 @@ describe("InsightFacade", function(this: Suite) {
 			}
 		});
 	});
-	*/
+
 	describe("Query Datasets", function() {
 		let facade: IInsightFacade = new InsightFacade();
 		let queries: Query[] = getQueries();
@@ -263,6 +263,25 @@ describe("InsightFacade", function(this: Suite) {
 			facade = new InsightFacade();
 			response = [];
 			courses = "";
+		});
+
+		it("query order object", async function() {
+			try {
+				query = getOrderQuery();
+				courses = getContentFromArchives(query.path);
+				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
+
+				response = await facade.performQuery(query.query);
+				expect(response).to.have.length(query.resultObject.length);
+				expect(response).to.have.deep.members(query.resultObject);
+				for (let idx = 0; idx < response.length; idx++) {
+					assert.deepEqual(response[idx], query.resultObject[idx]);
+				}
+				console.log(response, "response");
+			} catch (e) {
+				console.log(e, "error");
+				assert.fail("query failed to run");
+			}
 		});
 
 		it("query weird", async function() {

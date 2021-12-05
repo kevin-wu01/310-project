@@ -88,7 +88,6 @@ export default class Server {
 	private registerRoutes() {
 		// this.express.get("/echo/:msg", Server.echo);
 		this.express.put("/datasets/:id/:kind", (req, res) => {
-			console.log("PUT /datasets/:id/:kind");
 			this.addDataset(req.body, req.params.id, req.params.kind).then((result) => {
 				res.status(200).json({result});
 			}).catch((e) => {
@@ -98,7 +97,6 @@ export default class Server {
 		});
 
 		this.express.get("/datasets", (req, res) => {
-			console.log("GET /datasets");
 			this.getDatasets().then((result) => {
 				res.status(200).json({result});
 			}).catch((e) => {
@@ -107,7 +105,6 @@ export default class Server {
 		});
 
 		this.express.delete("/datasets/:id", (req, res) => {
-			console.log("DELETE /datasets/:id");
 			this.deleteDataset(req.params.id).then((id) => {
 				res.status(200).json({result: id});
 			}).catch((e) => {
@@ -120,7 +117,6 @@ export default class Server {
 		});
 
 		this.express.post("/query", (req, res) => {
-			console.log("POST /query");
 			this.queryData(req.body).then((result) => {
 				res.status(200).json({result});
 			}).catch((e) => {
@@ -155,7 +151,7 @@ export default class Server {
 	}
 
 	private async addDefaultDatasets(): Promise<void> {
-		await this.facade.addDataset("sfu", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
+		await this.facade.addDataset("courses", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
 	}
 
 	private async addUBCDatasets(): Promise<void> {

@@ -43,9 +43,6 @@ function filterTransformation(data: any[], transformations: any): any[] {
 		*/
 		return prevVal;
 	}, {});
-
-	// console.log(typeof transformedData[transformedData.length - 1][0] !== "object", "type");
-	// console.log(transformedData[transformedData.length - 1]);
 	let dataKeys = Object.keys(transformedObject);
 	/*
 	dataKeys.forEach((k) => {
@@ -57,8 +54,7 @@ function filterTransformation(data: any[], transformations: any): any[] {
 		});
 	});
 	*/
-	// console.log(transformedObject[Object.keys(transformedObject)[Object.keys(transformedObject).length - 1]], "last property");
-
+	// console.log(transformedObject[Object.keys(transformedObject)[702]], "invalid object");
 	for (let d in transformedObject) {
 		apply.forEach((a: any, idx: number) => {
 			let applyName = Object.keys(a)[0];
@@ -68,10 +64,8 @@ function filterTransformation(data: any[], transformations: any): any[] {
 
 			transformedObject[d][0][applyName] = applyVal;
 		});
-
 		appliedData.push(transformedObject[d][0]);
 	}
-	// console.log(appliedData[appliedData.length - 1], "appliedData");
 	/*
 	for (let d of transformedData) {
 		apply.forEach((a: any) => {
@@ -95,13 +89,15 @@ function getApplyVal(applyObject: any, data: any[]) {
 	let totalVal = new Decimal(0);
 	let count = 0;
 	let uniqueArray: any[] = [];
-
+	// console.log(data, "data");
 	data.forEach((d, idx) => {
 		let value = d[key];
 		let addNum: Decimal;
 
+		if (key === "Year" && d.Section === "overall") {
+			value = 1900;
+		}
 		if (typeof d !== "object") {
-			console.log("invalid object");
 			return;
 		}
 		switch(type) {
@@ -118,7 +114,6 @@ function getApplyVal(applyObject: any, data: any[]) {
 				break;
 			case "SUM":
 				addNum = new Decimal(value);
-				// console.log(addNum, "addNum");
 				totalVal = totalVal.add(addNum);
 				break;
 			case "COUNT":

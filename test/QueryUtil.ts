@@ -180,7 +180,7 @@ function getTwoDatasets(): Query {
 				},
 				{
 					GT: {
-						ct_avg: 90
+						courses_avg: 90
 					}
 				}
 			]
