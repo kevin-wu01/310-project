@@ -25,21 +25,23 @@ describe("InsightFacade", function(this: Suite) {
 
 	describe("Add Rooms", function() {
 		let facade: IInsightFacade = new InsightFacade();
+		let errorString: string = "";
 
 		beforeEach(function() {
 			clearDisk();
 			facade = new InsightFacade();
+			errorString = "";
 		});
 
-		it("should list no datasets", function (this: Context) {
-
-			return facade.listDatasets().then((insightDatasets) => {
-				expect(insightDatasets).to.deep.equal([]);
-
-				expect(insightDatasets).to.be.an.instanceof(Array);
-				expect(insightDatasets).to.have.length(0);
-			});
+		it("add valid room dataset", async function() {
+			// console.log("reached here");
+			try {
+				await facade.addDataset("rooms", rooms, InsightDatasetKind.Rooms);
+			} catch(e) {
+				assert.fail("failed to add dataset");
+			}
 		});
+
 
 	});
 	/*

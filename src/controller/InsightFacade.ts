@@ -3,6 +3,7 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind,
 import {filterData, filterOptions } from "./Query/QueryUtil";
 import {filterTransformation} from "./Query/TransformationUtil";
 import {checkValidQuery} from "./QueryValidation/ValidationUtil";
+import {processIndexTable} from "./Add/AddUtil";
 import JSZip from "jszip";
 import * as fs from "fs-extra";
 import {Document, parse} from "parse5";
@@ -102,45 +103,25 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	private builHtmlProcess(builHtml: any) {
-		let builParsed = parse(builHtml);
-		this.tableNode = undefined;
-		this.recursiveParseTable(builParsed);
-		if (typeof this.tableNode !== "undefined") {
-			console.log(builHtml.substring(0, 8));
-			this.arrayRooms.push({a:2, b:2});
-			// console.log
-		}
-	}
-
-	private roomDataParse(id: string, content: string, kind: InsightDatasetKind) {
+	private async roomDataParse(id: string, content: string, kind: InsightDatasetKind) {
 		let zip = new JSZip();
 		this.arrayRooms = [];
-		return zip.loadAsync(content, {base64: true}).then((contents) => {
-			contents.files["rooms/index.htm"].async("string").then((html) => {
-				let document = parse(html);
-				this.recursiveParseTable(document);
-				this.tableNode = this.tableNode.childNodes[3];
-				for (let each of this.tableNode.childNodes) {
-					if (each.nodeName === "tr") {
-						// console.log(each.childNodes[3]);
-						try {
-							let strLatter = each.childNodes[3].childNodes[0].value.trim();
-							let readString = "rooms/campus/discover/buildings-and-classrooms/" + strLatter;
-							// contents.files["rooms/campus/discover/buildings-and-classrooms/" + each.childNodes[3].childNodes[0].trim()]
-							// contents.files[readString].async("string").then((builHtml) => {
-							// 	this.builHtmlProcess(builHtml);
-							// });
-						} catch (e) {
-							console.log(e);
-						}
-					}
-				}
-				this.arrayRooms.push(kind);
-				console.log(this.arrayRooms);
-				this.addedIds.set(id, this.arrayRooms);
-			});
+		let contents = zip.loadAsync(content, {base64: true});
+		let html = contents.then(contents => {
+			return contents.files["rooms/index.htm"].async("string");
+		});
+		return Promise.all([contents, html]).then(indexRead => {
+			let document = parse(indexRead[1]);
+			this.recursiveParseTable(document);
+			return processIndexTable(this.tableNode, indexRead[0]);
+		}).then(datArray => {
+			this.arrayRooms = datArray;
+			this.arrayRooms.push(kind);
 
+			this.addedIds.set(id, this.arrayRooms);
+			fs.mkdirsSync("data");
+			fs.writeFileSync("data/" + id, JSON.stringify(this.addedIds.get(id)));
+			// console.log(this.addedIds);
 		}).catch((error) => {
 			throw new InsightError("problem reading or writing");
 		});
@@ -162,10 +143,17 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		if (kind === "rooms") {
-			this.roomDataParse(id, content, kind);
-			// console.log(this.addedIds);
+			try {
+				await this.roomDataParse(id, content, kind);
+			} catch (e) {
+				throw e;
+			}
 		} else {
-			this.courseDataParse(id, content, kind);
+			try {
+				await this.courseDataParse(id, content, kind);
+			} catch (e) {
+				throw e;
+			}
 		}
 
 		return Array.from(this.addedIds.keys());
