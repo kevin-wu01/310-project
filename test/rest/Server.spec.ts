@@ -90,9 +90,76 @@ describe("Facade D3", function () {
 	// Sample on how to format PUT requests
 
 	it("PUT test for courses dataset", function () {
-		const SERVER_URL = "http://localhost:4321";
-		const ENDPOINT_URL = "/datasets/courses/courses";
-		const ZIP_FILE_DATA = fs.readFileSync("./test/data/courses.zip");
+		let SERVER_URL = "http://localhost:4321";
+		let ENDPOINT_URL = "/datasets/courses/courses";
+		let ZIP_FILE_DATA = fs.readFileSync("./test/data/courses.zip");
+
+		try {
+			chai.request(SERVER_URL)
+				.put(ENDPOINT_URL)
+				.send(ZIP_FILE_DATA)
+				.set("Content-Type", "application/x-zip-compressed")
+				.then(function (res) {
+					// some logging here please!
+					// console.log(res.body, "res");
+					expect(res.status).to.be.equal(200);
+				})
+				.catch(function (err) {
+					// some logging here please!
+					console.log(err, "err1");
+					expect.fail();
+				});
+		} catch (err) {
+			console.log(err, "err2");
+			// and some more logging here!
+		}
+
+		SERVER_URL = "http://localhost:4321";
+		ENDPOINT_URL = "/datasets/courses";
+
+		try {
+			chai.request(SERVER_URL)
+				.delete(ENDPOINT_URL)
+				.set("Content-Type", "application/json")
+				.then(function (res) {
+					// some logging here please!;
+					expect(res.status).to.be.equal(200);
+				})
+				.catch(function (err) {
+					// some logging here please!
+					console.log(err, "err1");
+					expect.fail();
+				});
+		} catch (err) {
+			console.log(err, "err2");
+			// and some more logging here!
+		}
+
+		SERVER_URL = "http://localhost:4321";
+		ENDPOINT_URL = "/datasets";
+
+		try {
+			chai.request(SERVER_URL)
+				.get(ENDPOINT_URL)
+				.set("Content-Type", "application/json")
+				.then(function (res) {
+					// some logging here please!
+					console.log(res.body, "added datasets");
+					expect(res.status).to.be.equal(200);
+				})
+				.catch(function (err) {
+					// some logging here please!
+					console.log(err, "err1");
+					expect.fail();
+				});
+		} catch (err) {
+			console.log(err, "err2");
+			// and some more logging here!
+		}
+
+		SERVER_URL = "http://localhost:4321";
+		ENDPOINT_URL = "/datasets/courses/courses";
+		ZIP_FILE_DATA = fs.readFileSync("./test/data/courses.zip");
 
 		try {
 			return chai.request(SERVER_URL)
@@ -101,7 +168,7 @@ describe("Facade D3", function () {
 				.set("Content-Type", "application/x-zip-compressed")
 				.then(function (res) {
 					// some logging here please!
-					console.log(res.body, "res");
+					// console.log(res.body, "res");
 					expect(res.status).to.be.equal(200);
 				})
 				.catch(function (err) {
@@ -115,6 +182,7 @@ describe("Facade D3", function () {
 		}
 	});
 
+
 	it("GET datasets", function () {
 		const SERVER_URL = "http://localhost:4321";
 		const ENDPOINT_URL = "/datasets";
@@ -125,7 +193,7 @@ describe("Facade D3", function () {
 				.set("Content-Type", "application/json")
 				.then(function (res) {
 					// some logging here please!
-					console.log(res.body, "res");
+					console.log(res.body, "added datasets");
 					expect(res.status).to.be.equal(200);
 				})
 				.catch(function (err) {
@@ -148,8 +216,7 @@ describe("Facade D3", function () {
 				.delete(ENDPOINT_URL)
 				.set("Content-Type", "application/json")
 				.then(function (res) {
-					// some logging here please!
-					console.log(res.body, "res");
+					// some logging here please!;
 					expect(res.status).to.be.equal(200);
 				})
 				.catch(function (err) {
@@ -170,7 +237,6 @@ describe("Facade D3", function () {
 				.set("Content-Type", "application/json")
 				.then(function (res) {
 					// some logging here please!
-					console.log(res.body, "res");
 					expect(res.status).to.be.equal(200);
 				})
 				.catch(function (err) {
@@ -200,17 +266,14 @@ describe("Facade D3", function () {
 					expect(res.body).to.eql(resultData);
 
 					for (let idx = 0; idx < res.body.result.length; idx++){
-						console.log(res.body.result[idx], "res");
-						console.log(resultData.result[idx], "expected");
 						expect(res.body.result[idx]).to.eql(resultData.result[idx]);
 					}
-					console.log(res.body.result.length, "res length");
 					// expect(res.body.result).to.have.members(resultData.result);
 					// expect(res.body.result).to.have.ordered.members(resultData.result);
 				})
 				.catch(function (err) {
 					// some logging here please!
-					// console.log(err, "err1");
+					console.log(err, "err1");
 					expect.fail();
 				});
 		} catch (err) {
