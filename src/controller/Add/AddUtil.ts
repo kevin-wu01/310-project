@@ -35,7 +35,7 @@ function httpProm(sn: any, fn: any, addr: any, tableNode: any) {
 	return new Promise((resolve, reject) => {
 		try {
             // https://www.twilio.com/blog/2017/08/http-requests-in-node-js.html
-            let suf = addr.replace(/ /g, "%20");
+			let suf = addr.replace(/ /g, "%20");
 			http.get("http://cs310.students.cs.ubc.ca:11316/api/v1/project_team194/" + suf, (res: any) => {
 				let data = "";
 
@@ -58,31 +58,31 @@ function httpProm(sn: any, fn: any, addr: any, tableNode: any) {
 }
 
 function getRoomObj(trNode: any, eachArr: any) {
-    let rN = trNode.childNodes[1].childNodes[1].childNodes[0].value;
-    let seats = 0;
-    let rT = trNode.childNodes[7].childNodes[0].value.trim();
-    let rF = trNode.childNodes[5].childNodes[0].value.trim();
-    let rH = trNode.childNodes[1].childNodes[1].attrs[0].value;
-    
-    try {
-        seats = Number(trNode.childNodes[3].childNodes[0].value.trim());
-    } catch (e) {
-        console.log("capacity problem");
-    }
-    let retObj = {
-        rooms_fullname: eachArr[1],
-        rooms_shortname: eachArr[0],
-        rooms_number: rN,
-        rooms_name: eachArr[0] + "_" + rN,
-        rooms_address: eachArr[2],
-        rooms_lat: eachArr[4].lat,
-        rooms_lon: eachArr[4].lon,
-        rooms_seats: seats,
-        rooms_type: rT,
-        rooms_furniture: rF,
-        rooms_href: rH
-    };
-    return retObj;
+	let rN = trNode.childNodes[1].childNodes[1].childNodes[0].value;
+	let seats = 0;
+	let rT = trNode.childNodes[7].childNodes[0].value.trim();
+	let rF = trNode.childNodes[5].childNodes[0].value.trim();
+	let rH = trNode.childNodes[1].childNodes[1].attrs[0].value;
+
+	try {
+		seats = Number(trNode.childNodes[3].childNodes[0].value.trim());
+	} catch (e) {
+		console.log("capacity problem");
+	}
+	let retObj = {
+		rooms_fullname: eachArr[1],
+		rooms_shortname: eachArr[0],
+		rooms_number: rN,
+		rooms_name: eachArr[0] + "_" + rN,
+		rooms_address: eachArr[2],
+		rooms_lat: eachArr[4].lat,
+		rooms_lon: eachArr[4].lon,
+		rooms_seats: seats,
+		rooms_type: rT,
+		rooms_furniture: rF,
+		rooms_href: rH
+	};
+	return retObj;
 }
 
 function getCoords(builMap: any, arrHtmls: any) {

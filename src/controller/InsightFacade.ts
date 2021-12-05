@@ -107,14 +107,14 @@ export default class InsightFacade implements IInsightFacade {
 		let zip = new JSZip();
 		this.arrayRooms = [];
 		let contents = zip.loadAsync(content, {base64: true});
-		let html = contents.then(contents => {
-			return contents.files["rooms/index.htm"].async("string");
+		let html = contents.then((contentsLoaded) => {
+			return contentsLoaded.files["rooms/index.htm"].async("string");
 		});
-		return Promise.all([contents, html]).then(indexRead => {
+		return Promise.all([contents, html]).then((indexRead) => {
 			let document = parse(indexRead[1]);
 			this.recursiveParseTable(document);
 			return processIndexTable(this.tableNode, indexRead[0]);
-		}).then(datArray => {
+		}).then((datArray) => {
 			this.arrayRooms = datArray;
 			this.arrayRooms.push(kind);
 
@@ -143,17 +143,9 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		if (kind === "rooms") {
-			try {
-				await this.roomDataParse(id, content, kind);
-			} catch (e) {
-				throw e;
-			}
+			await this.roomDataParse(id, content, kind);
 		} else {
-			try {
-				await this.courseDataParse(id, content, kind);
-			} catch (e) {
-				throw e;
-			}
+			await this.courseDataParse(id, content, kind);
 		}
 
 		return Array.from(this.addedIds.keys());
