@@ -16,9 +16,33 @@ import {getWeirdQuery, getOrderQuery} from "../QueryUtil2";
 
 describe("InsightFacade", function(this: Suite) {
 	let courses: string;
+	let rooms: string;
 
 	before(function() {
 		courses = getContentFromArchives("courses.zip");
+		rooms = getContentFromArchives("rooms.zip");
+	});
+
+	describe("Add Rooms", function() {
+		let facade: IInsightFacade = new InsightFacade();
+		let errorString: string = "";
+
+		beforeEach(function() {
+			clearDisk();
+			facade = new InsightFacade();
+			errorString = "";
+		});
+
+		it("add valid room dataset", async function() {
+			// console.log("reached here");
+			try {
+				await facade.addDataset("rooms", rooms, InsightDatasetKind.Rooms);
+			} catch(e) {
+				assert.fail("failed to add dataset");
+			}
+		});
+
+
 	});
 
 	describe("List Datasets", function() {

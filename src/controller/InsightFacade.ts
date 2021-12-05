@@ -3,8 +3,13 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind,
 import {filterData, filterOptions } from "./Query/QueryUtil";
 import {filterTransformation} from "./Query/TransformationUtil";
 import {checkValidQuery} from "./QueryValidation/ValidationUtil";
+import {processIndexTable} from "./Add/AddUtil";
 import JSZip from "jszip";
 import * as fs from "fs-extra";
+import {Document, parse} from "parse5";
+import { transferPromiseness } from "chai-as-promised";
+import { Console } from "console";
+import { read } from "fs";
 
 function checkFields(sectionData: any) {
 	if (("Subject" in sectionData) && ("id" in sectionData) &&
@@ -21,6 +26,7 @@ function checkFields(sectionData: any) {
 	return false;
 }
 
+
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
@@ -29,6 +35,8 @@ function checkFields(sectionData: any) {
 export default class InsightFacade implements IInsightFacade {
 
 	private addedIds = new Map();
+	private tableNode: any;
+	private arrayRooms: any = [];
 
 	private set data(value: any[]) {
 		this._data = value;
@@ -44,27 +52,13 @@ export default class InsightFacade implements IInsightFacade {
 		this.num = 0;
 	}
 
-	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		if (id.includes("_")) {
-			throw new InsightError("id has underscore");
-		}
-
-		// https://stackoverflow.com/questions/10261986/how-to-detect-string-which-contains-only-spaces/50971250
-		if (!id.replace(/\s/g, "").length) {
-			throw new InsightError("id only has whitespaces");
-		}
-
-		if (this.addedIds.has(id)) {
-			throw new InsightError("id already exists");
-		}
-
+	private async courseDataParse(id: string, content: string, kind: InsightDatasetKind) {
 		let zip = new JSZip();
-
 		return zip.loadAsync(content, {base64: true}).then((contents) => {
-
 			let promArray: Array<Promise<string>> = [];
 			contents.forEach(function (relativePath, file) {
 				promArray.push(file.async("string"));
+				// console.log(relativePath);
 			});
 
 			let arraySections: any = [];
@@ -90,13 +84,71 @@ export default class InsightFacade implements IInsightFacade {
 				this.addedIds.set(id, arraySections);
 				fs.mkdirsSync("data");
 				fs.writeFileSync("data/" + id, JSON.stringify(this.addedIds.get(id)));
-				return Array.from(this.addedIds.keys());
-
 			});
 
 		}).catch((error) => {
 			throw new InsightError("problem reading or writing");
 		});
+	}
+
+	private recursiveParseTable(document: any) {
+		// console.log(document.childNodes.length, document.nodeName);
+		if (document.nodeName === "table") {
+			this.tableNode = document;
+		}
+		if ("childNodes" in document) {
+			for (let each of document.childNodes) {
+				this.recursiveParseTable(each);
+			}
+		}
+	}
+
+	private async roomDataParse(id: string, content: string, kind: InsightDatasetKind) {
+		let zip = new JSZip();
+		this.arrayRooms = [];
+		let contents = zip.loadAsync(content, {base64: true});
+		let html = contents.then((contentsLoaded) => {
+			return contentsLoaded.files["rooms/index.htm"].async("string");
+		});
+		return Promise.all([contents, html]).then((indexRead) => {
+			let document = parse(indexRead[1]);
+			this.recursiveParseTable(document);
+			return processIndexTable(this.tableNode, indexRead[0]);
+		}).then((datArray) => {
+			this.arrayRooms = datArray;
+			this.arrayRooms.push(kind);
+
+			this.addedIds.set(id, this.arrayRooms);
+			fs.mkdirsSync("data");
+			fs.writeFileSync("data/" + id, JSON.stringify(this.addedIds.get(id)));
+			// console.log(this.addedIds);
+		}).catch((error) => {
+			throw new InsightError("problem reading or writing");
+		});
+	}
+
+
+	public async addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+		if (id.includes("_")) {
+			throw new InsightError("id has underscore");
+		}
+
+		// https://stackoverflow.com/questions/10261986/how-to-detect-string-which-contains-only-spaces/50971250
+		if (!id.replace(/\s/g, "").length) {
+			throw new InsightError("id only has whitespaces");
+		}
+
+		if (this.addedIds.has(id)) {
+			throw new InsightError("id already exists");
+		}
+
+		if (kind === "rooms") {
+			await this.roomDataParse(id, content, kind);
+		} else {
+			await this.courseDataParse(id, content, kind);
+		}
+
+		return Array.from(this.addedIds.keys());
 	}
 
 	public async removeDataset(id: string): Promise<string> {
