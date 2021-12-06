@@ -1,7 +1,7 @@
 import {InsightError} from "../IInsightFacade";
-import {checkValidKey} from "./ValidationUtil";
+import {checkValidKey, checkValidRoomKey} from "./ValidationUtil";
 
-function checkValidTransformations(transformations: any, id: string) {
+function checkValidTransformations(transformations: any, id: string, type: string) {
 	const group: string[] = transformations.GROUP;
 	const apply: any[] = transformations.APPLY;
 	const applyKeys: string[] = [];
@@ -19,13 +19,13 @@ function checkValidTransformations(transformations: any, id: string) {
 	}
 
 	group.forEach((g) => {
-		checkValidGroup(g, id);
+		checkValidGroup(g, id, type);
 
 		applyKeys.push(g);
 	});
 
 	apply.forEach((a) => {
-		checkValidApply(a, applyKeys, id);
+		checkValidApply(a, applyKeys, id, type);
 
 		applyKeys.push(Object.keys(a)[0]);
 	});
@@ -33,7 +33,7 @@ function checkValidTransformations(transformations: any, id: string) {
 	return applyKeys;
 }
 
-function checkValidGroup(group: string, id: string) {
+function checkValidGroup(group: string, id: string, type: string) {
 	let splitKey: string[];
 
 	if (typeof group !== "string") {
@@ -50,10 +50,14 @@ function checkValidGroup(group: string, id: string) {
 		throw new InsightError();
 	}
 
-	checkValidKey(group);
+	if (type === "courses") {
+		checkValidKey(group);
+	} else {
+		checkValidRoomKey(group);
+	}
 }
 
-function checkValidApply(apply: any, applyKeys: string[], id: string) {
+function checkValidApply(apply: any, applyKeys: string[], id: string, type: string) {
 	const validApply: string[] = ["MAX", "MIN", "AVG", "SUM", "COUNT"];
 	const applyKey: string = Object.keys(apply)[0];
 	const applyBody: any = apply[applyKey];
@@ -88,9 +92,17 @@ function checkValidApply(apply: any, applyKeys: string[], id: string) {
 	}
 
 	if (applyRule !== "COUNT") {
-		checkValidKey(applyRuleKey, true);
+		if (type === "courses") {
+			checkValidKey(applyRuleKey, true);
+		} else {
+			checkValidRoomKey(applyRuleKey, true);
+		}
 	} else {
-		checkValidKey(applyRuleKey);
+		if (type === "courses") {
+			checkValidKey(applyRuleKey);
+		} else {
+			checkValidRoomKey(applyRuleKey);
+		}
 	}
 }
 

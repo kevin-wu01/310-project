@@ -2,17 +2,18 @@ import { expect, use, assert } from "chai";
 import InsightFacade from "../../src/controller/InsightFacade";
 import {IInsightFacade, InsightDatasetKind, InsightDataset,
 	InsightError, NotFoundError, ResultTooLargeError} from "../../src/controller/IInsightFacade";
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import JSZip from "jszip";
 import {Context, Suite} from "mocha";
 // import {expect, use} from "chai";
 // import chaiAsPromised from "chai-as-promised";
-import {getContentFromArchives, clearDisk, persistDir, Query, getQueries,
+import {getContentFromArchives, clearDisk, Query, getQueries,
 	getQueryTooLarge, getInvalidQuery, getSimpleQuery, getBadPropertyQuery} from "../TestUtil";
 import {getNOTQuery, getBadIDQuery, getTwoDatasets} from "../QueryUtil";
 import {getGTQuery, getWildcardQuery, getORQuery} from "../MoreQueryUtil";
 import {getInvalidTransformation} from "../TransformQueryTestUtil";
-import {getWeirdQuery, getOrderQuery} from "../QueryUtil2";
+import {getWeirdQuery, getOrderQuery, getRoomQuery} from "../QueryUtil2";
+import {testFolder} from "@ubccpsc310/folder-test";
 
 describe("InsightFacade", function(this: Suite) {
 	let courses: string;
@@ -21,8 +22,23 @@ describe("InsightFacade", function(this: Suite) {
 	before(function() {
 		courses = getContentFromArchives("courses.zip");
 		rooms = getContentFromArchives("rooms.zip");
+
+		// This section runs once and loads all datasets specified in the datasetsToLoad object
+		for (const key of Object.keys(datasetsToLoad)) {
+			const content = fs.readFileSync(datasetsToLoad[key]).toString("base64");
+			datasetContents.set(key, content);
+		}
+		// Just in case there is anything hanging around from a previous run
+		fs.removeSync(persistDir);
 	});
 
+	const persistDir = "./data";
+	const datasetContents = new Map<string, string>();
+
+	const datasetsToLoad: {[key: string]: string} = {
+		courses: "./test/resources/archives/courses.zip",
+	};
+	/*
 	describe("Add Rooms", function() {
 		let facade: IInsightFacade = new InsightFacade();
 		let errorString: string = "";
@@ -251,7 +267,7 @@ describe("InsightFacade", function(this: Suite) {
 			}
 		});
 	});
-
+	*/
 	describe("Query Datasets", function() {
 		let facade: IInsightFacade = new InsightFacade();
 		let queries: Query[] = getQueries();
@@ -265,9 +281,9 @@ describe("InsightFacade", function(this: Suite) {
 			courses = "";
 		});
 
-		it("query order object", async function() {
+		it("query weird", async function() {
 			try {
-				query = getOrderQuery();
+				query = getWeirdQuery();
 				courses = getContentFromArchives(query.path);
 				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
 
@@ -284,9 +300,24 @@ describe("InsightFacade", function(this: Suite) {
 			}
 		});
 
-		it("query weird", async function() {
+		it("query room dataset", async function() {
 			try {
-				query = getWeirdQuery();
+				query = getRoomQuery();
+				courses = getContentFromArchives(query.path);
+				await facade.addDataset("rooms", courses, InsightDatasetKind.Rooms);
+
+				response = await facade.performQuery(query.query);
+				expect(response).to.have.length(query.resultObject.length);
+				expect(response).to.have.deep.members(query.resultObject);
+			} catch (e) {
+				console.log(e, "e");
+				assert.fail("query failed to run");
+			}
+		});
+
+		it("query order object", async function() {
+			try {
+				query = getOrderQuery();
 				courses = getContentFromArchives(query.path);
 				await facade.addDataset("courses", courses, InsightDatasetKind.Courses);
 
@@ -296,6 +327,7 @@ describe("InsightFacade", function(this: Suite) {
 				for (let idx = 0; idx < response.length; idx++) {
 					assert.deepEqual(response[idx], query.resultObject[idx]);
 				}
+				console.log(response, "response");
 			} catch (e) {
 				console.log(e, "error");
 				assert.fail("query failed to run");
@@ -491,5 +523,4 @@ describe("InsightFacade", function(this: Suite) {
 		});
 
 	});
-
 });

@@ -10,6 +10,7 @@ import {Document, parse} from "parse5";
 import { transferPromiseness } from "chai-as-promised";
 import { Console } from "console";
 import { read } from "fs";
+import {getQueryId} from "./QueryValidation/DatasetKeyUtil";
 
 function checkFields(sectionData: any) {
 	if (("Subject" in sectionData) && ("id" in sectionData) &&
@@ -185,20 +186,28 @@ export default class InsightFacade implements IInsightFacade {
 		const transformations: Record<string, any> = query.TRANSFORMATIONS;
 		let filteredData: any[] = [];
 
-		if (!options) {
+		if (!options || !where) {
 			throw new InsightError();
 		}
 
-		let id: string = checkValidQuery(query);
+		let id: string = getQueryId(query);
+		// let id: string = "courses";
 		let dataset: any[] = this.findDataset(id);
 		let data: any[] = this.addedIds.get(id);
 
 		if (typeof data === "undefined") {
 			throw new InsightError("id not defined");
 		}
+		let type: string;
+		if (typeof data[data.length - 1] === "string") {
+			type = data.pop();
+		} else {
+			type = "courses";
+		}
+		checkValidQuery(query, type); // id is being found again
 
 		if (Object.keys(where).length !== 0) {
-			filteredData = filterData(this.addedIds.get(id), where);
+			filteredData = filterData(this.addedIds.get(id), where, type);
 		} else {
 			filteredData = this.addedIds.get(id); // stub
 		}
@@ -207,16 +216,16 @@ export default class InsightFacade implements IInsightFacade {
 		// filteredData = formatData(filteredData, id);
 		// console.log(transformations, "transformations");
 		if (transformations) {
-			console.log("transform data");
-			filteredData = filterTransformation(filteredData, transformations);
+			// console.log(filteredData, "filteredData");
+			filteredData = filterTransformation(filteredData, transformations, type);
 		}
 
 		if (filteredData.length > 5000) {
 			throw new ResultTooLargeError();
 		}
-		console.log(filteredData.length, "length");
-		filteredData = filterOptions(filteredData, options);
-		// console.log(filteredData, "filteredData");
+		// console.log(filteredData.length, "length");
+		filteredData = filterOptions(filteredData, options, type);
+
 		return Promise.resolve(filteredData);
 	}
 

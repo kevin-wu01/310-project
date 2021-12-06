@@ -1,7 +1,7 @@
-import {getDataKey} from "./QueryUtil";
+import {getRoomKey, getCourseKey} from "./DataKeyUtil";
 import Decimal from "decimal.js";
 
-function filterTransformation(data: any[], transformations: any): any[] {
+function filterTransformation(data: any[], transformations: any, type: string): any[] {
 	const group = transformations.GROUP;
 	const apply = transformations.APPLY;
 	let transformedData: any[];
@@ -11,7 +11,7 @@ function filterTransformation(data: any[], transformations: any): any[] {
 	transformedObject = data.reduce((prevVal, val) => {
 		let keyString = "";
 		group.forEach((g: any) => {
-			let k = getDataKey(g.split("_")[1]);
+			let k = type === "courses" ? getCourseKey(g.split("_")[1]) : getRoomKey(g);
 			let v = val[k];
 
 			if(!v) {
@@ -60,7 +60,7 @@ function filterTransformation(data: any[], transformations: any): any[] {
 			let applyName = Object.keys(a)[0];
 			let applyObject = a[applyName];
 			// console.log(transformedObject[d][0], "transformedObject");
-			let applyVal = getApplyVal(applyObject, transformedObject[d]);
+			let applyVal = getApplyVal(applyObject, transformedObject[d], type);
 
 			transformedObject[d][0][applyName] = applyVal;
 		});
@@ -82,9 +82,10 @@ function filterTransformation(data: any[], transformations: any): any[] {
 	return appliedData;
 }
 
-function getApplyVal(applyObject: any, data: any[]) {
-	let type = Object.keys(applyObject)[0];
-	let key = getDataKey(applyObject[type].split("_")[1]);
+function getApplyVal(applyObject: any, data: any[], type: string) {
+	let applyType = Object.keys(applyObject)[0];
+	let k = applyObject[applyType].split("_")[1];
+	let key = type === "courses" ? getCourseKey(k) : getRoomKey(applyObject[applyType]);
 	let typeVal: number = 0;
 	let totalVal = new Decimal(0);
 	let count = 0;
@@ -100,7 +101,7 @@ function getApplyVal(applyObject: any, data: any[]) {
 		if (typeof d !== "object") {
 			return;
 		}
-		switch(type) {
+		switch(applyType) {
 			case "MAX":
 				typeVal = idx === 0 ? value : typeVal > value ? typeVal : value;
 				break;
@@ -125,14 +126,14 @@ function getApplyVal(applyObject: any, data: any[]) {
 
 	});
 
-	typeVal = calculateVal(type, typeVal, count, totalVal, uniqueArray);
+	typeVal = calculateVal(applyType, typeVal, count, totalVal, uniqueArray);
 
 	return typeVal;
 }
 
 function calculateVal(type: string, typeVal: number, count: number, totalVal: Decimal, uniqueArray: any[]) {
 	let avg;
-
+	// console.log(type, "type");
 	switch(type) {
 		case "AVG":
 			avg = totalVal.toNumber() / count;
@@ -142,6 +143,7 @@ function calculateVal(type: string, typeVal: number, count: number, totalVal: De
 			typeVal = Number(totalVal.toFixed(2));
 			break;
 		case "COUNT":
+			// console.log(uniqueArray, "uniqueArray");
 			typeVal = uniqueArray.length;
 			break;
 	}
@@ -157,7 +159,7 @@ function isExistingValue(group: string[], pv: any, val: any): boolean {
 	let identical = true;
 
 	group.forEach((g: string) => {
-		let key = getDataKey(g.split("_")[1]);
+		let key = getCourseKey(g.split("_")[1]);
 
 		if (pv[0][key] !== val[key]) {
 			identical = false;

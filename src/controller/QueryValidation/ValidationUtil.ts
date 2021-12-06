@@ -1,34 +1,45 @@
 import {InsightError} from "../IInsightFacade";
 import {checkValidTransformations} from "./ValidTransformUtil";
+import {checkValidKey, checkValidRoomKey} from "./DatasetKeyUtil";
 
-function checkValidQuery(query: any): string {
+function checkValidQuery(query: any, type: string): string {
 	const where: Record<string, any> = query.WHERE;
 	const options: Record<string, any> = query.OPTIONS;
 	const transformations: Record<string, any> = query.TRANSFORMATIONS;
 	let customKeys: string[] = [];
 	let id: string;
 
+	if (Object.keys(options).length === 0 || !Object.keys(options).includes("COLUMNS")) {
+		throw new InsightError("Invalid options");
+	}
+
+	if (!Array.isArray(options.COLUMNS)) {
+		throw new InsightError("Invalid columns");
+	}
+
 	// let id: string = getQueryId(options.COLUMNS, transformations);
 
-	if (transformations) {
-		if (Object.keys(transformations).length !== 2) {
-			throw new InsightError("Transformation missing keys");
-		}
+	{
+		if (transformations) {
+			if (Object.keys(transformations).length !== 2) {
+				throw new InsightError("Transformation missing keys");
+			}
 
-		if (transformations.GROUP.length === 0) {
-			throw new InsightError("Group must be non-empty array");
-		}
+			if (transformations.GROUP.length === 0) {
+				throw new InsightError("Group must be non-empty array");
+			}
 
-		id = getQueryId(transformations.GROUP);
-		customKeys = checkValidTransformations(transformations, id);
-	} else {
-		id = getQueryId(options.COLUMNS);
+			id = getQueryId(transformations.GROUP);
+			customKeys = checkValidTransformations(transformations, id, type);
+		} else {
+			id = getQueryId(options.COLUMNS);
+		}
 	}
 
 	checkValidOptions(options, customKeys, id);
 
 	if (Object.keys(where).length !== 0) {
-		checkValidWhere(where, id);
+		checkValidWhere(where, id, type);
 	}
 
 	return id;
@@ -44,7 +55,7 @@ function getQueryId(columns: string[]) {
 	return id;
 }
 
-function checkValidWhere(query: any, id: string) {
+function checkValidWhere(query: any, id: string, type: string) {
 	const queryString: string = Object.keys(query)[0];
 
 	if (Object.keys(query).length !== 1) {
@@ -53,31 +64,31 @@ function checkValidWhere(query: any, id: string) {
 
 	switch(queryString) {
 		case "LT":
-			checkValidMComparator(query.LT, id);
+			checkValidMComparator(query.LT, id, type);
 			break;
 		case "GT":
-			checkValidMComparator(query.GT, id);
+			checkValidMComparator(query.GT, id, type);
 			break;
 		case "EQ":
-			checkValidMComparator(query.EQ, id);
+			checkValidMComparator(query.EQ, id, type);
 			break;
 		case "AND":
-			checkValidLogicalComparator(query.AND, id);
+			checkValidLogicalComparator(query.AND, id, type);
 			break;
 		case "OR":
-			checkValidLogicalComparator(query.OR, id);
+			checkValidLogicalComparator(query.OR, id, type);
 			break;
 		case "IS":
-			checkValidSComparator(query.IS, id);
+			checkValidSComparator(query.IS, id, type);
 			break;
 		case "NOT":
-			checkValidNOTComparator(query.NOT, id);
+			checkValidNOTComparator(query.NOT, id, type);
 			break;
 		default: throw new InsightError("Invalid format");
 	}
 }
 
-function checkValidMComparator(query: any, id: string): void {
+function checkValidMComparator(query: any, id: string, type: string): void {
 	if (typeof query !== "object") {
 		throw new InsightError("Invalid format");
 	}
@@ -93,9 +104,16 @@ function checkValidMComparator(query: any, id: string): void {
 	if (typeof query[Object.keys(query)[0]] !== "number") {
 		throw new InsightError("Invalid format");
 	}
+	/*
+	if (type === "courses") {
+		checkValidKey(Object.keys(query)[0].split("_")[1], true);
+	} else {
+		checkValidRoomKey(Object.keys(query)[0].split("_")[1], true);
+	}
+	*/
 }
 
-function checkValidLogicalComparator(query: any, id: string) {
+function checkValidLogicalComparator(query: any, id: string, type: string) {
 	if (!Array.isArray(query)) {
 		throw new InsightError("Invalid format");
 	}
@@ -109,11 +127,11 @@ function checkValidLogicalComparator(query: any, id: string) {
 			throw new InsightError("Invalid format");
 		}
 
-		checkValidWhere(q, id);
+		checkValidWhere(q, id, type);
 	});
 }
 
-function checkValidSComparator(query: any, id: string) {
+function checkValidSComparator(query: any, id: string, type: string) {
 	if (typeof query !== "object" || 11 > 12) {
 		throw new InsightError("Invalid format");
 	}
@@ -133,6 +151,14 @@ function checkValidSComparator(query: any, id: string) {
 	if (query[Object.keys(query)[0]].includes("*")) {
 		checkValidWildcardString(query[Object.keys(query)[0]]);
 	}
+	/*
+	if (type === "courses") {
+		console.log(Object.keys(query)[0].split("_")[1]);
+		checkValidKey(Object.keys(query)[0].split("_")[1], false, [], true);
+	} else {
+		checkValidRoomKey(Object.keys(query)[0].split("_")[1], false, [], true);
+	}
+	*/
 }
 
 function checkValidWildcardString(wildcard: string) {
@@ -153,7 +179,7 @@ function checkValidWildcardString(wildcard: string) {
 	}
 }
 
-function checkValidNOTComparator(query: any, id: string) {
+function checkValidNOTComparator(query: any, id: string, type: string) {
 	if (typeof query !== "object") {
 		throw new InsightError("Invalid format");
 	}
@@ -162,7 +188,7 @@ function checkValidNOTComparator(query: any, id: string) {
 		throw new InsightError("Invalid format");
 	}
 
-	checkValidWhere(query, id);
+	checkValidWhere(query, id, type);
 }
 
 function checkValidOptions(options: any, customKeys: string[], id: string) {
@@ -233,8 +259,8 @@ function checkValidOrder(order: any, columns: string[], id: string) {
 			throw new InsightError("invalid order direction");
 		}
 
-		if (!Array.isArray(order.keys)) {
-			throw new InsightError("order keys must be array");
+		if (!Array.isArray(order.keys) || order.keys.length === 0) {
+			throw new InsightError("order keys must be array of size greater than 0");
 		}
 
 		for (let key of order.keys) {
@@ -245,30 +271,4 @@ function checkValidOrder(order: any, columns: string[], id: string) {
 	}
 }
 
-function checkValidKey(key: string, numOnly: boolean = false, customKeys: string[] = []): void {
-	const validKeys: string[] = ["avg", "pass", "fail", "audit", "year",
-		"dept", "id", "instructor", "title", "uuid"];
-	const numericKeys: string[] = ["avg", "pass", "fail", "audit", "year"];
-	const splitKey = key.split("_")[1];
-
-	if (numOnly) {
-		if (!numericKeys.includes(splitKey)) {
-			throw new InsightError("Invalid key");
-		}
-	} else {
-		if (!validKeys.includes(splitKey) && !customKeys.includes(key)) {
-			throw new InsightError("Invalid key");
-		}
-	}
-}
-
-function checkValidRoomKey(key: string): void {
-	const validKeys: string[] = ["fullname", "shortname", "number", "name", "address", "lat", "lon", "seats", "type",
-		"furniture", "href"];
-
-	if (!validKeys.includes(key)) {
-		throw new InsightError("Invalid format");
-	}
-}
-
-export {checkValidQuery, checkValidKey};
+export {checkValidQuery, checkValidKey, checkValidRoomKey};

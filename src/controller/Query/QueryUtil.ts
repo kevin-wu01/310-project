@@ -1,31 +1,37 @@
 import {InsightError} from "../IInsightFacade";
 import {wildcardStartFilter, wildcardEndFilter, wildcardIncludeFilter} from "./WildcardUtil";
+import {getRoomKey, getCourseKey} from "./DataKeyUtil";
 
-function filterData(data: any[], query: any): any[] {
+function filterData(data: any[], query: any, type: string): any[] {
 	const queryString: string = Object.keys(query)[0];
 	let removeData: any[];
 
 	switch(queryString) {
 		case "LT":
-			data = filterMComparator(data, "LT", Object.keys(query.LT)[0], query.LT[Object.keys(query.LT)[0]]);
+			data = filterMComparator(data, "LT",
+				Object.keys(query.LT)[0], query.LT[Object.keys(query.LT)[0]], type);
 			break;
 		case "GT":
-			data = filterMComparator(data, "GT", Object.keys(query.GT)[0], query.GT[Object.keys(query.GT)[0]]);
+			data = filterMComparator(data, "GT", Object.keys(query.GT)[0],
+				query.GT[Object.keys(query.GT)[0]], type);
 			break;
 		case "EQ":
-			data = filterMComparator(data, "EQ", Object.keys(query.EQ)[0], query.EQ[Object.keys(query.EQ)[0]]);
+			data = filterMComparator(data, "EQ", Object.keys(query.EQ)[0],
+				query.EQ[Object.keys(query.EQ)[0]], type);
 			break;
 		case "AND":
-			data = filterAND(data, query.AND);
+			data = filterAND(data, query.AND, type);
+			console.log(data, "and data");
 			break;
 		case "OR":
-			data = filterOR(data, query.OR);
+			data = filterOR(data, query.OR, type);
 			break;
 		case "IS":
-			data = filterSComparator(data, Object.keys(query.IS)[0], query.IS[Object.keys(query.IS)[0]]);
+			data = filterSComparator(data, Object.keys(query.IS)[0], query.IS[Object.keys(query.IS)[0]], type);
+			console.log(data, Object.keys(query.IS)[0], "s data");
 			break;
 		case "NOT":
-			removeData = filterData(data, query.NOT);
+			removeData = filterData(data, query.NOT, type);
 			data = data.filter((x) => !removeData.includes(x));
 			break;
 		default: throw new InsightError();
@@ -34,11 +40,11 @@ function filterData(data: any[], query: any): any[] {
 	return data;
 }
 
-function filterAND(data: any[], queryArray: any): any[] {
+function filterAND(data: any[], queryArray: any, type: string): any[] {
 	let queryResults: any[] = [];
 
 	for (let query of queryArray) {
-		queryResults.push(filterData(data, query));
+		queryResults.push(filterData(data, query, type));
 	}
 
 	queryResults = queryResults.reduce((a, b) => a.filter((c: any) => b.includes(c)));
@@ -46,12 +52,12 @@ function filterAND(data: any[], queryArray: any): any[] {
 	return queryResults;
 }
 
-function filterOR(data: any[], queryArray: any): any[] {
+function filterOR(data: any[], queryArray: any, type: string): any[] {
 	let queryResults: any[] = [];
 	let resultSet = new Set();
 
 	for (let query of queryArray) {
-		queryResults.push(filterData(data, query));
+		queryResults.push(filterData(data, query, type));
 	}
 	/*
 	if (queryResults.length > 1) {
@@ -79,37 +85,47 @@ function filterOR(data: any[], queryArray: any): any[] {
 
 }
 
-function filterMComparator(data: any[], comparator: string, field: string, value: number): any[] {
+function filterMComparator(data: any[], comparator: string, field: string, value: number, type: string): any[] {
 	let filteredData: any[] = [];
 	let dataYear: number;
-	const dataKey: string = getDataKey(field.split("_")[1]);
+	const dataKey: string = type === "courses" ? getCourseKey(field.split("_")[1]) : getRoomKey(field);
 
 	switch(comparator) {
 		case "LT":
 			filteredData = data.filter((dataClass) => {
-				dataYear = checkIsOverall(dataClass);
-				if (dataYear === 1900) {
-					dataClass.Year = 1900;
+				if (type === "courses") {
+					dataYear = checkIsOverall(dataClass);
+					if (dataYear === 1900) {
+						dataClass.Year = 1900;
+					}
 				}
-
 				return dataClass[dataKey] < value;
 			});
 			break;
 		case "GT":
 			filteredData = data.filter((dataClass) => {
-				dataYear = checkIsOverall(dataClass);
-				if (dataYear === 1900) {
-					dataClass.Year = 1900;
+				if (type === "courses") {
+					dataYear = checkIsOverall(dataClass);
+					if (dataYear === 1900) {
+						dataClass.Year = 1900;
+					}
 				}
-
+				/*
+				console.log(dataClass, "dataClass");
+				console.log(dataKey, "dataKey");
+				console.log(dataClass[dataKey], "dataClass[dataKey]");
+				console.log(value, "value");
+				*/
 				return dataClass[dataKey] > value;
 			});
 			break;
 		case "EQ":
 			filteredData = data.filter((dataClass) => {
-				dataYear = checkIsOverall(dataClass);
-				if (dataYear === 1900) {
-					dataClass.Year = 1900;
+				if (type === "courses") {
+					dataYear = checkIsOverall(dataClass);
+					if (dataYear === 1900) {
+						dataClass.Year = 1900;
+					}
 				}
 
 				return dataClass[dataKey] === value;
@@ -130,7 +146,7 @@ function checkIsOverall(dataObject: any): number {
 	}
 }
 
-function filterOptions(data: any[], query: any): any[] {
+function filterOptions(data: any[], query: any, type: string): any[] {
 	const dataColumns: string[] = query.COLUMNS;
 	const order: any = query.ORDER;
 	let filteredData: any[] = [];
@@ -146,7 +162,7 @@ function filterOptions(data: any[], query: any): any[] {
 			// console.log(dataColumns);
 			let dataKey: string;
 			if (key.split("_").length === 2) {
-				dataKey = getDataKey(key.split("_")[1]);
+				dataKey = type === "courses" ? getCourseKey(key.split("_")[1]) : getRoomKey(key);
 			} else {
 				dataKey = key;
 			}
@@ -201,16 +217,31 @@ function sortOrder(filteredData: any[], order: any) {
 	return filteredData;
 }
 
-function filterSComparator(data: any[], field: string, value: string) {
+function filterSComparator(data: any[], field: string, value: string, type: string) {
 	let filteredData: any[];
-	let dataKey: string = getDataKey(field.split("_")[1]);
+	let dataKey: string;
 	let dataYear: number;
+
+	if (type === "courses") {
+		dataKey = type === "courses" ? getCourseKey(field.split("_")[1]) : getRoomKey(field);
+	} else {
+		dataKey = field;
+	}
 
 	if (!value.includes("*")) {
 		filteredData = data.filter((dataClass) => {
 			dataYear = checkIsOverall(dataClass);
 			if (dataYear === 1900) {
 				dataClass.Year = 1900;
+			}
+
+			if (dataKey === "id") {
+				// console.log(typeof dataClass[dataKey], "dataClass[dataKey]");
+				// console.log(typeof value);
+				if (typeof dataClass[dataKey] === "number") {
+					dataClass[dataKey] = dataClass[dataKey].toString();
+				}
+				// console.log(value, "value");
 			}
 
 			return dataClass[dataKey] === value;
@@ -254,44 +285,4 @@ function filterWildcardString(data: any[], dataKey: string, wildcardString: stri
 	return data;
 }
 
-function getDataKey(key: string) {
-	let dataKey: string;
-
-	switch (key) {
-		case "dept":
-			dataKey = "Subject";
-			break;
-		case "id":
-			dataKey = "Course";
-			break;
-		case "avg":
-			dataKey = "Avg";
-			break;
-		case "instructor":
-			dataKey = "Professor";
-			break;
-		case "title":
-			dataKey = "Title";
-			break;
-		case "pass":
-			dataKey = "Pass";
-			break;
-		case "fail":
-			dataKey = "Fail";
-			break;
-		case "audit":
-			dataKey = "Audit";
-			break;
-		case "uuid":
-			dataKey = "id";
-			break;
-		case "year":
-			dataKey = "Year";
-			break;
-		default: return key;
-	}
-
-	return dataKey;
-}
-
-export {filterData, filterOptions, checkIsOverall, getDataKey};
+export {filterData, filterOptions, checkIsOverall};
