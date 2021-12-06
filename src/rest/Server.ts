@@ -19,8 +19,8 @@ export default class Server {
 		this.registerMiddleware();
 		this.registerRoutes();
 		this.facade = new InsightFacade();
-		// this.addDefaultDatasets();
-		// this.addUBCDatasets();
+		this.addDefaultDatasets();
+		this.addUBCDatasets();
 		// NOTE: you can serve static frontend files in from your express server
 		// by uncommenting the line below. This makes files in ./frontend/public
 		// accessible at http://localhost:<port>/
@@ -151,7 +151,7 @@ export default class Server {
 	}
 
 	private async addDefaultDatasets(): Promise<void> {
-		await this.facade.addDataset("courses", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
+		await this.facade.addDataset("sfu", getContentFromArchives("courses.zip"), InsightDatasetKind.Courses);
 	}
 
 	private async addUBCDatasets(): Promise<void> {
