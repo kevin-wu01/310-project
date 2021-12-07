@@ -111,13 +111,14 @@ function checkValidMComparator(query: any, id: string, type: string): void {
 	if (typeof query[Object.keys(query)[0]] !== "number") {
 		throw new InsightError("Invalid format");
 	}
-	/*
+	console.log(Object.keys(query)[0].split("_")[1], "key");
+	console.log(type, "type");
+
 	if (type === "courses") {
-		checkValidKey(Object.keys(query)[0].split("_")[1], true);
+		checkValidKey(Object.keys(query)[0], true);
 	} else {
-		checkValidRoomKey(Object.keys(query)[0].split("_")[1], true);
+		checkValidRoomKey(Object.keys(query)[0], true);
 	}
-	*/
 }
 
 function checkValidLogicalComparator(query: any, id: string, type: string) {
@@ -158,14 +159,12 @@ function checkValidSComparator(query: any, id: string, type: string) {
 	if (query[Object.keys(query)[0]].includes("*")) {
 		checkValidWildcardString(query[Object.keys(query)[0]]);
 	}
-	/*
+
 	if (type === "courses") {
-		console.log(Object.keys(query)[0].split("_")[1]);
-		checkValidKey(Object.keys(query)[0].split("_")[1], false, [], true);
+		checkValidKey(Object.keys(query)[0], false, [], true);
 	} else {
-		checkValidRoomKey(Object.keys(query)[0].split("_")[1], false, [], true);
+		checkValidRoomKey(Object.keys(query)[0], false, [], true);
 	}
-	*/
 }
 
 function checkValidWildcardString(wildcard: string) {
