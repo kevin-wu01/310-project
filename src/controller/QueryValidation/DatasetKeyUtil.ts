@@ -58,6 +58,7 @@ function checkValidKey(key: string, numOnly: boolean = false, customKeys: string
 		}
 		*/
 		// console.log(validKeys.includes(splitKey));
+		console.log(key, "key");
 		if (!validKeys.includes(splitKey) && !customKeys.includes(key)) {
 			throw new InsightError("Invalid key");
 		}

@@ -1,0 +1,16 @@
+{
+	"title": "zero seats",
+	"input": {
+		"WHERE": {
+			"EQ": {
+				"rooms_seats": 0
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_seats"
+			]
+		}
+	},
+	"with": []
+}
