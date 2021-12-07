@@ -91,7 +91,7 @@ describe("Facade D3", function () {
 
 	it("PUT test for courses dataset", function () {
 		let SERVER_URL = "http://localhost:4321";
-		let ENDPOINT_URL = "/datasets/courses/courses";
+		let ENDPOINT_URL = "/dataset/courses/courses";
 		let ZIP_FILE_DATA = fs.readFileSync("./test/data/courses.zip");
 
 		try {
@@ -115,7 +115,7 @@ describe("Facade D3", function () {
 		}
 
 		SERVER_URL = "http://localhost:4321";
-		ENDPOINT_URL = "/datasets/courses";
+		ENDPOINT_URL = "/dataset/courses";
 
 		try {
 			chai.request(SERVER_URL)
@@ -158,7 +158,7 @@ describe("Facade D3", function () {
 		}
 
 		SERVER_URL = "http://localhost:4321";
-		ENDPOINT_URL = "/datasets/courses/courses";
+		ENDPOINT_URL = "/dataset/courses/courses";
 		ZIP_FILE_DATA = fs.readFileSync("./test/data/courses.zip");
 
 		try {
@@ -209,7 +209,7 @@ describe("Facade D3", function () {
 
 	it("DELETE dataset", function () {
 		const SERVER_URL = "http://localhost:4321";
-		let ENDPOINT_URL = "/datasets/ubc";
+		let ENDPOINT_URL = "/dataset/ubc";
 
 		try {
 			chai.request(SERVER_URL)

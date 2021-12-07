@@ -87,7 +87,7 @@ export default class Server {
 	// Registers all request handlers to routes
 	private registerRoutes() {
 		// this.express.get("/echo/:msg", Server.echo);
-		this.express.put("/datasets/:id/:kind", (req, res) => {
+		this.express.put("/dataset/:id/:kind", (req, res) => {
 			this.addDataset(req.body, req.params.id, req.params.kind).then((result) => {
 				res.status(200).json({result});
 			}).catch((e) => {
@@ -104,7 +104,7 @@ export default class Server {
 			});
 		});
 
-		this.express.delete("/datasets/:id", (req, res) => {
+		this.express.delete("/dataset/:id", (req, res) => {
 			this.deleteDataset(req.params.id).then((id) => {
 				res.status(200).json({result: id});
 			}).catch((e) => {
