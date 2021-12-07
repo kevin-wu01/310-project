@@ -9,6 +9,13 @@ function checkValidQuery(query: any, type: string): string {
 	let customKeys: string[] = [];
 	let id: string;
 
+	Object.keys(query).forEach((key) => {
+		const validKeys: string[] = ["WHERE", "OPTIONS", "TRANSFORMATIONS"];
+		if (!validKeys.includes(key)) {
+			throw new InsightError("invalid query body");
+		}
+	});
+
 	if (Object.keys(options).length === 0 || !Object.keys(options).includes("COLUMNS")) {
 		throw new InsightError("Invalid options");
 	}

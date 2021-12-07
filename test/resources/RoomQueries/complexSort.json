@@ -1,0 +1,72 @@
+{
+	"title": "basic room",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"IS": {
+						"rooms_furniture": "*Tables*"
+					}
+				},
+				{
+					"GT": {
+						"rooms_seats": 75
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_shortname",
+				"maxSeats",
+				"minLat",
+				"avgLon",
+				"sumSeats",
+				"countType"
+			],
+			"ORDER": {
+				"dir": "DOWN",
+				"keys": [
+					"countType",
+					"avgLon",
+					"maxSeats",
+					"sumSeats",
+					"minLat"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"rooms_shortname"
+			],
+			"APPLY": [
+				{
+					"maxSeats": {
+						"MAX": "rooms_seats"
+					}
+				},
+				{
+					"minLat": {
+						"MIN": "rooms_lat"
+					}
+				},
+				{
+					"avgLon": {
+						"AVG": "rooms_lon"
+					}
+				},
+				{
+					"sumSeats": {
+						"SUM": "rooms_seats"
+					}
+				},
+				{
+					"countType": {
+						"COUNT": "rooms_type"
+					}
+				}
+			]
+		}
+	},
+	"with": [{"rooms_shortname":"ANGU","maxSeats":260,"minLat":49.26486,"avgLon":-123.25,"sumSeats":340,"countType":2},{"rooms_shortname":"IBLC","maxSeats":154,"minLat":49.26766,"avgLon":-123.25,"sumSeats":266,"countType":2},{"rooms_shortname":"MCLD","maxSeats":136,"minLat":49.26176,"avgLon":-123.25,"sumSeats":343,"countType":2},{"rooms_shortname":"BUCH","maxSeats":108,"minLat":49.26826,"avgLon":-123.25,"sumSeats":528,"countType":2},{"rooms_shortname":"OSBO","maxSeats":442,"minLat":49.26047,"avgLon":-123.24,"sumSeats":442,"countType":1},{"rooms_shortname":"LSC","maxSeats":350,"minLat":49.26236,"avgLon":-123.24,"sumSeats":825,"countType":1},{"rooms_shortname":"PHRM","maxSeats":236,"minLat":49.26229,"avgLon":-123.24,"sumSeats":403,"countType":1},{"rooms_shortname":"HEBB","maxSeats":375,"minLat":49.2661,"avgLon":-123.25,"sumSeats":375,"countType":1},{"rooms_shortname":"SRC","maxSeats":299,"minLat":49.2683,"avgLon":-123.25,"sumSeats":897,"countType":1},{"rooms_shortname":"CHBE","maxSeats":200,"minLat":49.26228,"avgLon":-123.25,"sumSeats":294,"countType":1},{"rooms_shortname":"SWNG","maxSeats":190,"minLat":49.26293,"avgLon":-123.25,"sumSeats":755,"countType":1},{"rooms_shortname":"DMP","maxSeats":160,"minLat":49.26125,"avgLon":-123.25,"sumSeats":360,"countType":1},{"rooms_shortname":"FRDM","maxSeats":160,"minLat":49.26541,"avgLon":-123.25,"sumSeats":160,"countType":1},{"rooms_shortname":"WOOD","maxSeats":120,"minLat":49.26478,"avgLon":-123.25,"sumSeats":448,"countType":1},{"rooms_shortname":"IONA","maxSeats":100,"minLat":49.27106,"avgLon":-123.25,"sumSeats":100,"countType":1},{"rooms_shortname":"CEME","maxSeats":100,"minLat":49.26273,"avgLon":-123.25,"sumSeats":100,"countType":1},{"rooms_shortname":"ALRD","maxSeats":94,"minLat":49.2699,"avgLon":-123.25,"sumSeats":94,"countType":1},{"rooms_shortname":"ESB","maxSeats":80,"minLat":49.26274,"avgLon":-123.25,"sumSeats":80,"countType":1},{"rooms_shortname":"BIOL","maxSeats":76,"minLat":49.26479,"avgLon":-123.25,"sumSeats":76,"countType":1},{"rooms_shortname":"LSK","maxSeats":205,"minLat":49.26545,"avgLon":-123.26,"sumSeats":388,"countType":1},{"rooms_shortname":"GEOG","maxSeats":100,"minLat":49.26605,"avgLon":-123.26,"sumSeats":100,"countType":1},{"rooms_shortname":"LASR","maxSeats":80,"minLat":49.26767,"avgLon":-123.26,"sumSeats":80,"countType":1}]
+}

@@ -208,11 +208,12 @@ export default class InsightFacade implements IInsightFacade {
 		type = data[data.length - 1];
 		console.log(type, "type");
 		checkValidQuery(query, type); // id is being found again
-
+		// this.addedIds.get(id);
+		// data.slice(0, data.length - 2)
 		if (Object.keys(where).length !== 0) {
-			filteredData = filterData(data.slice(0, data.length - 2), where, type);
+			filteredData = filterData(data.slice(0, data.length - 1), where, type);
 		} else {
-			filteredData = data.slice(0, data.length - 2);
+			filteredData = data.slice(0, data.length - 1);
 		}
 
 		// filteredData = formatData(filteredData, id);
