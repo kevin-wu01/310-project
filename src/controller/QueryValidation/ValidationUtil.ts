@@ -43,7 +43,7 @@ function checkValidQuery(query: any, type: string): string {
 		}
 	}
 
-	checkValidOptions(options, customKeys, id);
+	checkValidOptions(options, customKeys, id, type);
 
 	if (Object.keys(where).length !== 0) {
 		checkValidWhere(where, id, type);
@@ -197,7 +197,7 @@ function checkValidNOTComparator(query: any, id: string, type: string) {
 	checkValidWhere(query, id, type);
 }
 
-function checkValidOptions(options: any, customKeys: string[], id: string) {
+function checkValidOptions(options: any, customKeys: string[], id: string, type: string) {
 	let optionKeys: string[] = Object.keys(options);
 	let columns: any[] = options.COLUMNS;
 	let order: string = options.ORDER;
@@ -232,7 +232,11 @@ function checkValidOptions(options: any, customKeys: string[], id: string) {
 				throw new InsightError("Invalid format");
 			}
 
-			checkValidKey(c, false);
+			if (type === "courses") {
+				checkValidKey(c, false, customKeys);
+			} else {
+				checkValidRoomKey(c, false, customKeys);
+			}
 		});
 	}
 	if (order) {

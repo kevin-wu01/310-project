@@ -1,0 +1,17 @@
+{
+	"title": "basic room",
+	"input": {
+		"WHERE": {
+			"LT": {
+				"rooms_lon": -123.25468
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_lon",
+				"rooms_name"
+			]
+		}
+	},
+	"with": [{"rooms_lon":-123.25741,"rooms_name":"ANSO_202"},{"rooms_lon":-123.25741,"rooms_name":"ANSO_203"},{"rooms_lon":-123.25741,"rooms_name":"ANSO_205"},{"rooms_lon":-123.25741,"rooms_name":"ANSO_207"},{"rooms_lon":-123.25655,"rooms_name":"AUDX_142"},{"rooms_lon":-123.25655,"rooms_name":"AUDX_157"},{"rooms_lon":-123.25583,"rooms_name":"LASR_102"},{"rooms_lon":-123.25583,"rooms_name":"LASR_104"},{"rooms_lon":-123.25583,"rooms_name":"LASR_105"},{"rooms_lon":-123.25583,"rooms_name":"LASR_107"},{"rooms_lon":-123.25583,"rooms_name":"LASR_211"},{"rooms_lon":-123.25583,"rooms_name":"LASR_5C"},{"rooms_lon":-123.25623,"rooms_name":"GEOG_100"},{"rooms_lon":-123.25623,"rooms_name":"GEOG_101"},{"rooms_lon":-123.25623,"rooms_name":"GEOG_147"},{"rooms_lon":-123.25623,"rooms_name":"GEOG_200"},{"rooms_lon":-123.25623,"rooms_name":"GEOG_201"},{"rooms_lon":-123.25623,"rooms_name":"GEOG_212"},{"rooms_lon":-123.25623,"rooms_name":"GEOG_214"},{"rooms_lon":-123.25623,"rooms_name":"GEOG_242"},{"rooms_lon":-123.25505,"rooms_name":"SOWK_122"},{"rooms_lon":-123.25505,"rooms_name":"SOWK_124"},{"rooms_lon":-123.25505,"rooms_name":"SOWK_222"},{"rooms_lon":-123.25505,"rooms_name":"SOWK_223"},{"rooms_lon":-123.25505,"rooms_name":"SOWK_224"},{"rooms_lon":-123.25505,"rooms_name":"SOWK_324"},{"rooms_lon":-123.25505,"rooms_name":"SOWK_326"},{"rooms_lon":-123.25533,"rooms_name":"LSK_200"},{"rooms_lon":-123.25533,"rooms_name":"LSK_201"},{"rooms_lon":-123.25533,"rooms_name":"LSK_460"},{"rooms_lon":-123.25533,"rooms_name":"LSK_462"},{"rooms_lon":-123.255534,"rooms_name":"MATH_100"},{"rooms_lon":-123.255534,"rooms_name":"MATH_102"},{"rooms_lon":-123.255534,"rooms_name":"MATH_104"},{"rooms_lon":-123.255534,"rooms_name":"MATH_105"},{"rooms_lon":-123.255534,"rooms_name":"MATH_202"},{"rooms_lon":-123.255534,"rooms_name":"MATH_203"},{"rooms_lon":-123.255534,"rooms_name":"MATH_204"},{"rooms_lon":-123.255534,"rooms_name":"MATH_225"},{"rooms_lon":-123.254816,"rooms_name":"MATX_1100"},{"rooms_lon":-123.2559,"rooms_name":"PCOH_1001"},{"rooms_lon":-123.2559,"rooms_name":"PCOH_1002"},{"rooms_lon":-123.2559,"rooms_name":"PCOH_1003"},{"rooms_lon":-123.2559,"rooms_name":"PCOH_1008"},{"rooms_lon":-123.2559,"rooms_name":"PCOH_1009"},{"rooms_lon":-123.2559,"rooms_name":"PCOH_1011"},{"rooms_lon":-123.2559,"rooms_name":"PCOH_1215"},{"rooms_lon":-123.2559,"rooms_name":"PCOH_1302"},{"rooms_lon":-123.25692,"rooms_name":"UCLL_101"},{"rooms_lon":-123.25692,"rooms_name":"UCLL_103"},{"rooms_lon":-123.25692,"rooms_name":"UCLL_107"},{"rooms_lon":-123.25692,"rooms_name":"UCLL_109"}]
+}

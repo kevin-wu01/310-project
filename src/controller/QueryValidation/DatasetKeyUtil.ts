@@ -46,7 +46,7 @@ function checkValidKey(key: string, numOnly: boolean = false, customKeys: string
 			throw new InsightError("Invalid key");
 		}
 	} else {
-		/*
+
 		if (SOnly) {
 			if (!stringKeys.includes(splitKey)) {
 				throw new InsightError("Invalid key");
@@ -56,11 +56,14 @@ function checkValidKey(key: string, numOnly: boolean = false, customKeys: string
 				throw new InsightError("Invalid key");
 			}
 		}
-		*/
+
 		// console.log(validKeys.includes(splitKey));
+		console.log(key, "key");
+		/*
 		if (!validKeys.includes(splitKey) && !customKeys.includes(key)) {
 			throw new InsightError("Invalid key");
 		}
+		*/
 	}
 }
 
@@ -77,7 +80,7 @@ function checkValidRoomKey(key: string, numOnly: boolean = false, customKeys: st
 			throw new InsightError("Invalid key");
 		}
 	} else {
-		/*
+
 		if (SOnly) {
 			if (!stringKeys.includes(splitKey)) {
 				throw new InsightError("Invalid key");
@@ -87,10 +90,11 @@ function checkValidRoomKey(key: string, numOnly: boolean = false, customKeys: st
 				throw new InsightError("Invalid key");
 			}
 		}
-		*/
+		/*
 		if (!validKeys.includes(splitKey) && !customKeys.includes(key)) {
 			throw new InsightError("Invalid key");
 		}
+		*/
 	}
 }
 
