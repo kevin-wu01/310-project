@@ -233,9 +233,9 @@ function checkValidOptions(options: any, customKeys: string[], id: string, type:
 			}
 
 			if (type === "courses") {
-				checkValidKey(c, false);
+				checkValidKey(c, false, customKeys);
 			} else {
-				checkValidRoomKey(c);
+				checkValidRoomKey(c, false, customKeys);
 			}
 		});
 	}
