@@ -206,7 +206,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		*/
 		type = data[data.length - 1];
-		console.log(type, "type");
+
 		checkValidQuery(query, type); // id is being found again
 		// this.addedIds.get(id);
 		// data.slice(0, data.length - 2)
@@ -227,6 +227,7 @@ export default class InsightFacade implements IInsightFacade {
 		// console.log(filteredData.length, "length");
 		filteredData = filterOptions(filteredData, options, type);
 		// data.push(type);
+		// console.log(filteredData, "filteredData");
 		return Promise.resolve(filteredData);
 	}
 
