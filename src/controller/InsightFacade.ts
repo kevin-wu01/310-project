@@ -191,32 +191,32 @@ export default class InsightFacade implements IInsightFacade {
 		}
 
 		let id: string = getQueryId(query);
-		// let id: string = "courses";
 		let dataset: any[] = this.findDataset(id);
 		let data: any[] = this.addedIds.get(id);
 
 		if (typeof data === "undefined") {
-			throw new InsightError("id not defined");
+			throw new InsightError("data not defined");
 		}
 		let type: string;
+		/*
 		if (typeof data[data.length - 1] === "string") {
 			type = data.pop();
 		} else {
 			type = "courses";
 		}
+		*/
+		type = data[data.length - 1];
+		console.log(type, "type");
 		checkValidQuery(query, type); // id is being found again
 
 		if (Object.keys(where).length !== 0) {
-			filteredData = filterData(this.addedIds.get(id), where, type);
+			filteredData = filterData(data.slice(0, data.length - 2), where, type);
 		} else {
-			filteredData = this.addedIds.get(id); // stub
+			filteredData = data.slice(0, data.length - 2);
 		}
-		// console.log(filteredData.length, "length");
 
 		// filteredData = formatData(filteredData, id);
-		// console.log(transformations, "transformations");
 		if (transformations) {
-			// console.log(filteredData, "filteredData");
 			filteredData = filterTransformation(filteredData, transformations, type);
 		}
 
@@ -225,7 +225,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		// console.log(filteredData.length, "length");
 		filteredData = filterOptions(filteredData, options, type);
-
+		// data.push(type);
 		return Promise.resolve(filteredData);
 	}
 
