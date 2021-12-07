@@ -21,14 +21,12 @@ function filterData(data: any[], query: any, type: string): any[] {
 			break;
 		case "AND":
 			data = filterAND(data, query.AND, type);
-			console.log(data, "and data");
 			break;
 		case "OR":
 			data = filterOR(data, query.OR, type);
 			break;
 		case "IS":
 			data = filterSComparator(data, Object.keys(query.IS)[0], query.IS[Object.keys(query.IS)[0]], type);
-			console.log(data, Object.keys(query.IS)[0], "s data");
 			break;
 		case "NOT":
 			removeData = filterData(data, query.NOT, type);
