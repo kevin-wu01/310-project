@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a74e723b-2ffe-4091-9a36-00ff918f8d44" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="ProjectId" id="1zG3VtprKMX8B4s65XDCl9fWoPB" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/test/resources" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="nodejs.mocha.mocha_node_package_dir" value="$PROJECT_DIR$/node_modules/mocha" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="settings.javascript.linters.eslint" />
+    <property name="ts.external.directory.path" value="C:\Users\kevin\Documents\GitHub\project_team194\node_modules\typescript\lib" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\kevin\Documents\GitHub\project_team194\src\controller\Query" />
+      <recent name="C:\Users\kevin\Documents\GitHub\project_team194\src\controller\Validation" />
+      <recent name="C:\Users\kevin\Documents\GitHub\project_team194\src\controller" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\kevin\Documents\GitHub\project_team194\test\resources" />
+      <recent name="C:\Users\kevin\Documents\GitHub\project_team194\test\resources\RoomQueries" />
+      <recent name="C:\Users\kevin\Documents\GitHub\project_team194\test\resources\archives" />
+      <recent name="C:\Users\kevin\Documents\GitHub\project_team194\test\controller" />
+      <recent name="C:\Users\kevin\Documents\GitHub\project_team194\test\data" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Mocha.test\controller\InsightFacade2.spec.ts">
+    <configuration name="test\controller\InsightFacade2.spec.ts" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <ui>bdd</ui>
+      <extra-mocha-options>--require ts-node/register --timeout 10000</extra-mocha-options>
+      <test-kind>TEST_FILE</test-kind>
+      <test-file>$PROJECT_DIR$/test/controller/InsightFacade2.spec.ts</test-file>
+      <method v="2" />
+    </configuration>
+    <configuration name="test\controller\InsightFacade3.spec.ts" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <ui>bdd</ui>
+      <extra-mocha-options>--require ts-node/register --timeout 10000</extra-mocha-options>
+      <test-kind>TEST_FILE</test-kind>
+      <test-file>$PROJECT_DIR$/test/controller/InsightFacade3.spec.ts</test-file>
+      <method v="2" />
+    </configuration>
+    <configuration name="test\controller\InsightFacade.spec.ts" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <ui>bdd</ui>
+      <extra-mocha-options>--require ts-node/register --timeout 10000</extra-mocha-options>
+      <test-kind>TEST_FILE</test-kind>
+      <test-file>$PROJECT_DIR$/test/controller/InsightFacade.spec.ts</test-file>
+      <method v="2" />
+    </configuration>
+    <configuration name="test\rest\Server.spec.ts" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <ui>bdd</ui>
+      <extra-mocha-options>--require ts-node/register --timeout 20000</extra-mocha-options>
+      <test-kind>TEST_FILE</test-kind>
+      <test-file>$PROJECT_DIR$/test/rest/Server.spec.ts</test-file>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Mocha.test" />
+      <item itemvalue="Mocha.test\controller\InsightFacade.spec.ts" />
+      <item itemvalue="Mocha.test\controller\InsightFacade2.spec.ts" />
+      <item itemvalue="Mocha.test\controller\InsightFacade3.spec.ts" />
+      <item itemvalue="Mocha.test\rest\Server.spec.ts" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Mocha.test\controller\InsightFacade2.spec.ts" />
+        <item itemvalue="Mocha.test\controller\InsightFacade3.spec.ts" />
+        <item itemvalue="Mocha.test\rest\Server.spec.ts" />
+        <item itemvalue="Mocha.test\controller\InsightFacade.spec.ts" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a74e723b-2ffe-4091-9a36-00ff918f8d44" name="Default Changelist" comment="" />
+      <created>1633760624311</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1633760624311</updated>
+      <workItem from="1633760625925" duration="20694000" />
+      <workItem from="1634362288567" duration="555000" />
+      <workItem from="1634527120298" duration="12758000" />
+      <workItem from="1635060059078" duration="9258000" />
+      <workItem from="1635121030322" duration="36501000" />
+      <workItem from="1635572865231" duration="473000" />
+      <workItem from="1635583399526" duration="32126000" />
+      <workItem from="1636690326578" duration="7450000" />
+      <workItem from="1637537408583" duration="15453000" />
+      <workItem from="1637624437218" duration="8518000" />
+      <workItem from="1637689283233" duration="61245000" />
+      <workItem from="1638042100008" duration="36026000" />
+      <workItem from="1638156334589" duration="1415000" />
+      <workItem from="1638157787922" duration="53951000" />
+      <workItem from="1638732957031" duration="58359000" />
+      <workItem from="1640856745538" duration="315000" />
+      <workItem from="1641425719491" duration="526000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="511" y="253" key="#ESLint" timestamp="1638785525728">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="511" y="253" key="#ESLint/0.0.1280.720@0.0.1280.720" timestamp="1638785525728" />
+    <state x="144" y="10" width="1089" height="713" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1638914355499">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="144" y="10" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1920.0.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638914355499" />
+    <state x="96" y="7" width="1089" height="713" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.720@0.0.1280.720" timestamp="1638831795510" />
+    <state x="140" y="140" width="1643" height="803" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog" timestamp="1638884680976">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="140" y="140" width="1643" height="803" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog/-1920.0.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638884680976" />
+    <state x="93" y="93" width="1095" height="535" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog/0.0.1280.720@0.0.1280.720" timestamp="1638843435239" />
+    <state x="557" y="162" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1638040966492">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="557" y="162" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/-1920.-7.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638040966492" />
+    <state x="371" y="108" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.720@0.0.1280.720" timestamp="1637821583094" />
+    <state x="369" y="105" key="FileChooserDialogImpl" timestamp="1638762454654">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="369" y="105" key="FileChooserDialogImpl/0.0.1280.720@0.0.1280.720" timestamp="1638762454654" />
+    <state width="1877" height="318" key="GridCell.Tab.0.bottom" timestamp="1638959854573">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="318" key="GridCell.Tab.0.bottom/-1920.0.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638959854573" />
+    <state width="1237" height="228" key="GridCell.Tab.0.bottom/0.0.1280.720@0.0.1280.720" timestamp="1638844414744" />
+    <state width="1877" height="318" key="GridCell.Tab.0.center" timestamp="1638959854573">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="318" key="GridCell.Tab.0.center/-1920.0.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638959854573" />
+    <state width="1237" height="228" key="GridCell.Tab.0.center/0.0.1280.720@0.0.1280.720" timestamp="1638844414743" />
+    <state width="1877" height="318" key="GridCell.Tab.0.left" timestamp="1638959854573">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="318" key="GridCell.Tab.0.left/-1920.0.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638959854573" />
+    <state width="1237" height="228" key="GridCell.Tab.0.left/0.0.1280.720@0.0.1280.720" timestamp="1638844414743" />
+    <state width="1877" height="318" key="GridCell.Tab.0.right" timestamp="1638959854573">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="318" key="GridCell.Tab.0.right/-1920.0.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638959854573" />
+    <state width="1237" height="228" key="GridCell.Tab.0.right/0.0.1280.720@0.0.1280.720" timestamp="1638844414744" />
+    <state x="142" y="0" key="SettingsEditor" timestamp="1638761337174">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="142" y="0" key="SettingsEditor/0.0.1280.720@0.0.1280.720" timestamp="1638761337174" />
+    <state x="458" y="275" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1637887918271">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="458" y="275" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1280.720/460.1080.1000.504@0.0.1280.720" timestamp="1637623905715" />
+    <state x="458" y="275" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1280.720@0.0.1280.720" timestamp="1637887918271" />
+    <state x="830" y="169" width="881" height="846" key="find.popup" timestamp="1638922370190">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="521" y="140" width="881" height="846" key="find.popup/-1920.-7.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638073920286" />
+    <state x="830" y="169" width="881" height="846" key="find.popup/-1920.0.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638922370190" />
+    <state x="529" y="25" width="587" height="534" key="find.popup/0.0.1280.720/460.1080.1000.504@0.0.1280.720" timestamp="1637627345360" />
+    <state x="347" y="93" width="587" height="564" key="find.popup/0.0.1280.720@0.0.1280.720" timestamp="1638835420859" />
+    <state x="417" y="133" key="refactoring.ChangeSignatureDialog" timestamp="1638785486998">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="417" y="133" key="refactoring.ChangeSignatureDialog/0.0.1280.720@0.0.1280.720" timestamp="1638785486998" />
+    <state x="297" y="161" key="run.anything.popup" timestamp="1634776402287">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="297" y="161" key="run.anything.popup/0.0.1280.720@0.0.1280.720" timestamp="1634776402287" />
+    <state x="415" y="157" width="672" height="678" key="search.everywhere.popup" timestamp="1638844150967">
+      <screen x="0" y="0" width="1280" height="720" />
+    </state>
+    <state x="623" y="235" width="672" height="678" key="search.everywhere.popup/-1920.-7.1280.720/0.0.1920.1080@0.0.1920.1080" timestamp="1638090193331" />
+    <state x="415" y="157" width="672" height="678" key="search.everywhere.popup/0.0.1280.720@0.0.1280.720" timestamp="1638844150967" />
+  </component>
+</project>
